@@ -121,3 +121,4 @@ def test_add_chart_refuses_empty_selection(client):
     r = mcp_call(client, tok, "add_chart", {"dashboard_id": d["dashboard_id"], "title": "x",
                                              "spec": {"metric": "visibility", "brands": ["nonexistent"]}})
     assert r.json()["result"]["isError"] is True
+
