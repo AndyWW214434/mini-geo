@@ -89,7 +89,7 @@
     {% if s.drivers %}
       <p><strong>What the assistant started and stopped citing.</strong> Share of {{ ctx.platforms[s.platform_id] }} answers in this category that cite each site, before and after {{ s.change_day|day }}:</p>
       <table>
-        <thead><tr><th>Site</th><th>Most-cited page since the change</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+        <thead><tr><th>Site</th><th>Page that moved most</th><th class="num">Before</th><th class="num">After</th></tr></thead>
         <tbody>
         {% for d in s.drivers %}
           <tr><td>{{ d.domain }}{% if d.owner_name %} <span class="small">({{ d.owner_name }})</span>{% endif %}</td>

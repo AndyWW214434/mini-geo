@@ -10,3 +10,4 @@ data/history.jsonl
 .pytest_cache/
 .ruff_cache/
 out/
+.claude/
