@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ brand }} in AI answers</title>
+<style>
+  :root { --ink:#1d1d24; --muted:#5f6270; --line:#e3e3ea; --accent:#5b4fe0; --warn:#b35c00; --bg:#ffffff; --soft:#f6f6f9; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 -apple-system, "Segoe UI", Inter, Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 30px; line-height:1.2; margin: 0 0 6px; letter-spacing:-0.01em; }
+  h2 { font-size: 20px; margin: 48px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 28px 0 6px; }
+  p { margin: 0 0 12px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .lede p { font-size: 16.5px; }
+  .notice { background: #fff6e6; border: 1px solid #f1d7a6; padding: 10px 14px; border-radius: 6px; font-size: 13.5px; margin: 20px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 8px 0 6px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .cell small { color: var(--muted); display:block; font-size: 11.5px; }
+  .tag { display:inline-block; font-size: 11px; font-weight:600; padding: 1px 7px; border-radius: 10px; vertical-align: 2px; }
+  .tag.high { background:#e6f4ea; color:#1e6b34; } .tag.medium { background:#fff3d6; color:#8a5a00; } .tag.low { background:#eee; color:#555; }
+  .story { margin: 22px 0 30px; }
+  .chart { width:100%; height:auto; margin: 6px 0 4px; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .change { stroke: #999; stroke-dasharray: 4 3; }
+  .chart .axis { font-size: 10px; fill: var(--muted); }
+  .chart .label { font-size: 11px; font-weight: 600; }
+  .why { color: var(--muted); font-size: 13px; }
+  ol.recs { padding-left: 20px; } ol.recs li { margin-bottom: 14px; }
+  ol.recs .owner { color: var(--muted); font-size: 12.5px; }
+  .small { font-size: 13px; color: var(--muted); }
+  code { font-size: 12.5px; background: var(--soft); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+  @media print { main { padding: 0; } h2 { break-after: avoid; } .story { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">Prepared for {{ brand }} marketing and developer relations · data {{ ctx.data_start|day }} – {{ ctx.data_end|day }} {{ ctx.data_end.year }} · generated {{ generated|day }} {{ generated.year }}</p>
+  <h1>{{ brand }} in AI answers</h1>
+  <p class="meta">How {{ volume.platforms }} AI assistants mention {{ brand }} and its competitors when buyers ask {{ volume.prompts }} questions about {{ categories|join(", ") }}.</p>
+
+  {% if synthetic %}
+  <div class="notice"><strong>Synthetic data.</strong> No production answer history was available for this build, so the
+    {{ "{:,}".format(volume.sources.get("synthetic", 0)) }} answers behind this report come from the pipeline's synthetic generator, which mimics Bright Data's
+    output and contains planted changes. The method, tables and wording are the real product; the market conclusions are not.</div>
+  {% endif %}
+
+  <section class="lede">
+    {% for line in summary %}<p>{{ line }}</p>{% endfor %}
+  </section>
+
+  <h2>1. Where {{ brand }} stands</h2>
+  <p>Share of real answers that name {{ brand }}, last {{ (standing.end - standing.start).days + 1 }} days ({{ standing.start|day }} – {{ standing.end|day }}), by assistant and question category.
+     Rank is among the brands that compete in that category. Where {{ brand }} is not first, the leader is shown.</p>
+  <table>
+    <thead><tr><th>Assistant</th>{% for c in categories %}<th>{{ c|capitalize }}</th>{% endfor %}<th class="num">All</th><th class="num">Avg. position</th></tr></thead>
+    <tbody>
+    {% for row in standing.rows %}
+      <tr>
+        <td>{{ row.platform }}</td>
+        {% for c in row.cells %}
+          <td class="cell" style="background: {{ heat(c.vis) }}">
+            <strong>{{ c.vis|pct }}</strong> · #{{ c.rank or "–" }}
+            {% if c.leader %}<small>{{ c.leader }} {{ c.leader_vis|pct }}</small>{% elif c.gap is not none %}<small>+{{ (c.gap * 100)|round|int }} vs #2</small>{% endif %}
+          </td>
+        {% endfor %}
+        <td class="num">{{ row.overall|pct }}</td>
+        <td class="num">{{ "%.1f"|format(row.overall_pos) if row.overall_pos else "n/a" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="small">Position 1 means {{ brand }} was the first brand recommended. Days with collection problems are included here; see section 4.</p>
+
+  <h2>2. What changed</h2>
+  {% if not stories %}
+    <p>No change in the last 30 days passed the tests in the appendix.</p>
+  {% endif %}
+  {% for s in stories %}
+  <div class="story">
+    <h3>{{ s.headline }} <span class="tag {{ s.confidence }}">{{ s.confidence }} confidence</span></h3>
+    {% for p in s.body %}<p>{{ p }}</p>{% endfor %}
+    {{ s.chart|safe }}
+    <p class="small">Daily visibility in {{ s.findings[0].category }} answers on {{ ctx.platforms[s.platform_id] }}. Dashed line: change date. Gaps: days excluded for data problems.</p>
+    {% if s.drivers %}
+      <p><strong>What the assistant started and stopped citing.</strong> Share of {{ ctx.platforms[s.platform_id] }} answers in this category that cite each site, before and after {{ s.change_day|day }}:</p>
+      <table>
+        <thead><tr><th>Site</th><th>Most-cited page since the change</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+        <tbody>
+        {% for d in s.drivers %}
+          <tr><td>{{ d.domain }}{% if d.owner_name %} <span class="small">({{ d.owner_name }})</span>{% endif %}</td>
+              <td><code>{{ d.url or "" }}</code></td>
+              <td class="num">{{ d.before|pct }}</td><td class="num">{{ d.after|pct }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% set lifted = s.drivers|selectattr("named_when_cited", "defined")|list %}
+      {% if lifted %}{% set d = lifted[0] %}{% set gap = d.named_when_cited - d.named_otherwise %}
+        {% set fell = (s.findings|selectattr("brand_id", "equalto", d.brand)|first).after < (s.findings|selectattr("brand_id", "equalto", d.brand)|first).before %}
+        {% if gap|abs >= 0.1 and ((gap < 0) == fell) %}
+        <p class="why">Since the change, answers citing {{ d.domain }} name {{ d.brand_name }} {{ d.named_when_cited|pct }} of the time, against {{ d.named_otherwise|pct }} for answers that don't. The citation and the change go together within single answers, not just in time.</p>
+        {% else %}
+        <p class="why">The citation shift and the visibility change start on the same day, but within single answers citing {{ d.domain }} barely changes whether {{ d.brand_name }} is named
+          ({{ d.named_when_cited|pct }} when cited, {{ d.named_otherwise|pct }} otherwise). Read these sites as a sign of what the assistant now relies on, not as proof of cause.</p>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+    {% if s.prompt_move %}{% set m = s.prompt_move %}
+      <p class="why">Largest single-question move for {{ m.brand }}: “{{ m.prompt }}”, {{ m.before|pct }} to {{ m.after|pct }}.</p>
+    {% endif %}
+    <p class="why">Why we believe it: {{ s.why }}.</p>
+  </div>
+  {% endfor %}
+
+  <h2>3. What to do</h2>
+  {% if recommendations %}
+  <ol class="recs">
+    {% for r in recommendations %}
+      <li><strong>{{ r.title }}.</strong> {{ r.why }} {{ r.do }} <span class="owner">Owner: {{ r.owner }}.</span></li>
+    {% endfor %}
+  </ol>
+  {% else %}<p>Nothing needs action this period.</p>{% endif %}
+
+  <h2>4. How much to trust this</h2>
+  <p>{{ "{:,}".format(volume.answers) }} answers were collected; {{ volume.real_rate|pct }} were real, complete answers. The rest were scraper errors, empty or blocked pages, cut-off answers,
+     or answers to a different question. Only real answers count toward visibility.</p>
+  {% if issues %}
+  <table>
+    <thead><tr><th>Assistant</th><th>Days</th><th class="num">Real answers</th><th class="num">Normal</th><th>Main failure</th></tr></thead>
+    <tbody>
+    {% for i in issues %}{% set ev = i.evidence %}
+      <tr><td>{{ ctx.platforms[i.platform_id] }}</td><td>{{ ev|span }}</td>
+          <td class="num">{{ ev.ok_rate|pct }}</td><td class="num">{{ ev.baseline_ok_rate|pct }}</td>
+          <td>{{ ev.dominant_failure|replace("_", " ") }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p>These days are excluded from change detection on that assistant. A naive count would have shown visibility collapsing on each of them.</p>
+  {% endif %}
+  {% if watch %}
+    <p>Also seen, but not strong enough to act on:
+    {% for f in watch %}{{ ctx.names[f.brand_id] }} in {{ f.category }} on {{ ctx.platforms[f.platform_id] }} ({{ f.before|pct }} to {{ f.after|pct }}){% if not loop.last %}; {% endif %}{% endfor %}.</p>
+  {% endif %}
+  <p>Limits. Each assistant was asked {{ volume.prompts }} fixed questions from logged-out sessions in one country. Real users phrase questions differently, are often logged in, and get personalised answers.
+     Visibility measures whether a brand is named, not whether it is recommended favourably. Positions come from list order and are approximate for answers written as prose.</p>
+
+  <h2>Appendix: method</h2>
+  <p><strong>Visibility.</strong> For a brand, an assistant and a day: real answers to questions in the brand's categories that name the brand, divided by real answers to questions in those categories.
+     With no real answers, visibility is empty rather than zero.</p>
+  <p><strong>Change detection.</strong> For each assistant, category and brand, daily counts are treated as binomial. We pick the single change date that best splits the series (at least four days each side),
+     and compare before and after with a two-proportion test. A change is reported if it is at least 10 points, significant after correcting for every series tested,
+     holds on most days after the change, and shows up on at least two separate questions. High confidence needs a much smaller p-value, three or more questions, and no data problem within two days.</p>
+  <p><strong>Data problems.</strong> A day where an assistant's share of real answers falls below 75%, or 12 points under its usual rate, is treated as a collection problem and excluded.</p>
+  <p class="small">Insights batch {{ batch_id }}. Every figure in this report is read from the pipeline's daily metric tables.</p>
+</main>
+</body>
+</html>

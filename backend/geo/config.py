@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from functools import lru_cache
 from typing import Literal
 
@@ -27,6 +28,8 @@ class Settings(BaseSettings):
     collection_interval_minutes: int = 15
     collection_deadline_minutes: int = 50   # after this a window's run is marked timed_out
     brightdata_poll_seconds: int = 20
+    # Day 0 of the synthetic generator's timeline (matches data/history.jsonl.gz).
+    synthetic_epoch: date = date(2026, 10, 22)
 
     # Auth / product
     workos_api_key: str | None = None
