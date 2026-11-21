@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from geo.catalog import Brand
 
 URL_RE = re.compile(r"\]\([^)]*\)|https?://\S+|www\.\S+")
-ITEM_RE = re.compile(r"^[ \t]*(?:(?:\d+[.)]|[-*•+])[ \t]+|#{1,6}[ \t]+|\|)", re.M)
+ITEM_RE = re.compile(r"^[ \t]*(?:(?:\d+[.)]|[-*•+])[ \t]+|#{1,6}[ \t]+|\|)", re.MULTILINE)
 TABLE_SEPARATOR = re.compile(r"^\s*\|?\s*:?-{2,}")
 HEAD_END = re.compile(r"\*\*(?=\s*[:\-–—])|\*\*\s*$|:|\s[-–—]\s|\|")
 
@@ -48,7 +48,7 @@ class MentionMatcher:
             loose = sorted({b.name, *b.aliases} - set(b.strict_aliases), key=len, reverse=True)
             if loose:
                 self._patterns.append((b.brand_id, re.compile(
-                    r"(?<![\w])(?:" + "|".join(re.escape(a) for a in loose) + r")(?![\w-])", re.I)))
+                    r"(?<![\w])(?:" + "|".join(re.escape(a) for a in loose) + r")(?![\w-])", re.IGNORECASE)))
             if b.strict_aliases:
                 self._patterns.append((b.brand_id, re.compile(
                     r"(?<![\w])(?:" + "|".join(re.escape(a) for a in b.strict_aliases) + r")(?![\w-])")))

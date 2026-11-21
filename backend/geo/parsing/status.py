@@ -17,13 +17,13 @@ OK, ERROR, EMPTY, NOT_ANSWER, TRUNCATED, WRONG_PROMPT = (
 
 # Short pages that are the site talking, not the assistant answering.
 NOT_ANSWER_PATTERNS = [
-    (re.compile(r"<!doctype html|<html[\s>]", re.I), "html_page"),
-    (re.compile(r"verify you are human|unusual traffic|captcha|security of your connection", re.I), "captcha"),
+    (re.compile(r"<!doctype html|<html[\s>]", re.IGNORECASE), "html_page"),
+    (re.compile(r"verify you are human|unusual traffic|captcha|security of your connection", re.IGNORECASE), "captcha"),
     (re.compile(r"(log|sign)[ -]?in to (continue|x\b|chatgpt|gemini)|you've been signed out|"
-                r"available to logged-in users", re.I), "login_wall"),
-    (re.compile(r"reached our limit|hit your limit|too many requests|try again later", re.I), "rate_limited"),
-    (re.compile(r"before you continue to google|we use cookies and data", re.I), "consent_page"),
-    (re.compile(r"something went wrong|an error occurred|network error", re.I), "site_error"),
+                r"available to logged-in users", re.IGNORECASE), "login_wall"),
+    (re.compile(r"reached our limit|hit your limit|too many requests|try again later", re.IGNORECASE), "rate_limited"),
+    (re.compile(r"before you continue to google|we use cookies and data", re.IGNORECASE), "consent_page"),
+    (re.compile(r"something went wrong|an error occurred|network error", re.IGNORECASE), "site_error"),
 ]
 NOT_ANSWER_MAX_CHARS = 600  # a long real answer can mention "sign in" without being a login wall
 

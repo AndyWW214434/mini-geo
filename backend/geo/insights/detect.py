@@ -211,6 +211,7 @@ def _drivers(conn, version: str, platform: str, category: str, brand: str, chang
         if lift["n_cited"] >= 10 and lift["n_other"] >= 10:
             d["named_when_cited"] = round(lift["k_cited"] / lift["n_cited"], 4)
             d["named_otherwise"] = round(lift["k_other"] / lift["n_other"], 4)
+            d["lift_p"] = two_proportion_p(lift["k_cited"], lift["n_cited"], lift["k_other"], lift["n_other"])
     return out[:4]
 
 

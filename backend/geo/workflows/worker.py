@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 import structlog
 from temporalio.worker import Worker
 
+from geo.cli import bootstrap
 from geo.config import settings
 from geo.workflows.activities import ALL as ACTIVITIES
 from geo.workflows.collection import WORKFLOWS
@@ -21,6 +22,7 @@ log = structlog.get_logger()
 async def main() -> None:
     logging.basicConfig(level=logging.INFO)
     s = settings()
+    await asyncio.to_thread(bootstrap)
     client = await connect()
     log.info("schedules", result=await ensure_schedule())
     worker = Worker(

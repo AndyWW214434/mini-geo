@@ -1,0 +1,70 @@
+# Render Blueprint: infrastructure as code for the whole system.
+# New > Blueprint > pick this repo. Secrets marked `sync: false` are entered once in the dashboard.
+envVarGroups:
+  - name: geo-shared
+    envVars:
+      - key: DATABASE_URL          # Supabase session-pooler connection string (IPv4)
+        sync: false
+      - key: WORKOS_CLIENT_ID
+        sync: false
+      - key: WORKOS_API_KEY
+        sync: false
+      - key: FOCUS_BRAND
+        value: stripe
+
+services:
+  - type: worker
+    name: geo-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    dockerCommand: python -m geo.workflows.worker
+    plan: starter
+    numInstances: 2               # Temporal spreads workflow and activity tasks across replicas
+    envVars:
+      - fromGroup: geo-shared
+      - key: TEMPORAL_ADDRESS     # <namespace>.<account>.tmprl.cloud:7233
+        sync: false
+      - key: TEMPORAL_NAMESPACE
+        sync: false
+      - key: TEMPORAL_API_KEY
+        sync: false
+      - key: BRIGHTDATA_API_TOKEN # unset => synthetic source, every row labelled as such
+        sync: false
+      - key: COLLECTOR_SOURCE
+        value: auto
+
+  - type: web
+    name: geo-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: geo-shared
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: PUBLIC_API_URL       # e.g. https://geo-api.onrender.com
+        sync: false
+      - key: CORS_ORIGINS         # JSON list, e.g. ["https://geo-web.onrender.com"]
+        sync: false
+
+  - type: web
+    name: geo-web
+    runtime: node
+    rootDir: web
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: WORKOS_CLIENT_ID
+        sync: false
+      - key: WORKOS_API_KEY
+        sync: false
+      - key: WORKOS_COOKIE_PASSWORD
+        generateValue: true
+      - key: NEXT_PUBLIC_WORKOS_REDIRECT_URI   # https://geo-web.onrender.com/callback
+        sync: false
+      - key: API_URL                           # https://geo-api.onrender.com
+        sync: false

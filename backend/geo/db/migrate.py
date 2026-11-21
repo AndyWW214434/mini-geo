@@ -14,6 +14,7 @@ MIGRATIONS = Path(__file__).parent / "migrations"
 def migrate(database_url: str | None = None) -> list[str]:
     applied: list[str] = []
     with psycopg.connect(database_url or settings().database_url, autocommit=True) as conn:
+        conn.execute("select pg_advisory_lock(7741001)")  # replicas starting together migrate one at a time
         conn.execute("create table if not exists public.schema_migrations "
                      "(name text primary key, applied_at timestamptz not null default now())")
         done = {r[0] for r in conn.execute("select name from public.schema_migrations")}

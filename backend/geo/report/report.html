@@ -101,11 +101,11 @@
       {% set lifted = s.drivers|selectattr("named_when_cited", "defined")|list %}
       {% if lifted %}{% set d = lifted[0] %}{% set gap = d.named_when_cited - d.named_otherwise %}
         {% set fell = (s.findings|selectattr("brand_id", "equalto", d.brand)|first).after < (s.findings|selectattr("brand_id", "equalto", d.brand)|first).before %}
-        {% if gap|abs >= 0.1 and ((gap < 0) == fell) %}
+        {% if gap|abs >= 0.1 and ((gap < 0) == fell) and d.lift_p is defined and d.lift_p < 0.01 %}
         <p class="why">Since the change, answers citing {{ d.domain }} name {{ d.brand_name }} {{ d.named_when_cited|pct }} of the time, against {{ d.named_otherwise|pct }} for answers that don't. The citation and the change go together within single answers, not just in time.</p>
         {% else %}
-        <p class="why">The citation shift and the visibility change start on the same day, but within single answers citing {{ d.domain }} barely changes whether {{ d.brand_name }} is named
-          ({{ d.named_when_cited|pct }} when cited, {{ d.named_otherwise|pct }} otherwise). Read these sites as a sign of what the assistant now relies on, not as proof of cause.</p>
+        <p class="why">The citation shift and the visibility change start on the same day, but within single answers we cannot show that citing {{ d.domain }} changes whether {{ d.brand_name }} is named
+          ({{ d.named_when_cited|pct }} when cited, {{ d.named_otherwise|pct }} otherwise, a gap within noise at these sample sizes). Read these sites as a sign of what the assistant now relies on, not as proof of cause.</p>
         {% endif %}
       {% endif %}
     {% endif %}

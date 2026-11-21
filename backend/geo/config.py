@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from datetime import date
 from functools import lru_cache
 from typing import Literal
@@ -40,10 +41,15 @@ class Settings(BaseSettings):
     # Chat
     anthropic_api_key: str | None = None
     chat_model: str = "claude-opus-5-5"
-    mcp_url: str = "http://localhost:8000/mcp/"
+    # The chat reaches the MCP server over HTTP, as the user. Default: this API process over loopback.
+    mcp_url_override: str | None = Field(default=None, alias="MCP_URL")
 
     # Report
     focus_brand: str = "stripe"
+
+    @property
+    def mcp_url(self) -> str:
+        return self.mcp_url_override or f"http://127.0.0.1:{os.environ.get('PORT', '8000')}/mcp/"
 
     @property
     def effective_source(self) -> str:

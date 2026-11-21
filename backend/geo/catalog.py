@@ -8,10 +8,11 @@ data change. Nothing in the pipeline refers to a specific brand.
 from __future__ import annotations
 
 import csv
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+DATA_DIR = Path(os.environ.get("GEO_DATA_DIR") or Path(__file__).resolve().parents[2] / "data")
 
 
 def _split(value: str) -> tuple[str, ...]:

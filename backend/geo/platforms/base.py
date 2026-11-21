@@ -4,7 +4,7 @@ Each AI platform returns a different shape and fails in its own ways. An adapter
 raw Bright Data record into `Extracted` (text, citation URLs, error, the prompt the page
 actually answered). Everything downstream (parser, ETL, insights) is platform-agnostic.
 
-Adding a platform = one subclass in its own module, plus a row in config.platforms (the
+Adding a platform = one subclass (see adapters.py), plus a row in config.platforms (the
 seed does that from the registry). Subclasses register themselves.
 """
 

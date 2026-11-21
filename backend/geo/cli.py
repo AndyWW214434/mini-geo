@@ -13,6 +13,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(prog="geo")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("migrate", help="apply SQL migrations")
+    sub.add_parser("bootstrap", help="migrate, seed, and on an empty database load history and build the report")
     sub.add_parser("seed", help="load prompts/brands/platforms config from data/*.csv")
     h = sub.add_parser("load-history", help="load a Bright Data .jsonl(.gz) export into raw.answers")
     h.add_argument("path", type=Path, nargs="?", default=DATA_DIR / "history.jsonl.gz")
@@ -28,6 +29,8 @@ def main() -> None:
     if args.cmd == "migrate":
         from geo.db.migrate import migrate
         print("applied:", migrate() or "nothing new")
+    elif args.cmd == "bootstrap":
+        bootstrap()
     elif args.cmd == "seed":
         from geo.etl.pipeline import seed_catalog
         seed_catalog()
@@ -52,6 +55,29 @@ def main() -> None:
 
         from geo.workflows.schedule import ensure_schedule
         print(asyncio.run(ensure_schedule(paused=args.pause)))
+
+
+def bootstrap() -> None:
+    """Safe to run on every start of every replica."""
+    import psycopg
+
+    from geo.config import settings
+    from geo.db.migrate import migrate
+    from geo.etl.pipeline import load_history, run_pipeline, seed_catalog
+
+    print("migrations:", migrate() or "up to date")
+    with psycopg.connect(settings().database_url, autocommit=True) as lock:
+        lock.execute("select pg_advisory_lock(7741002)")
+        seed_catalog()
+        with psycopg.connect(settings().database_url) as conn:
+            empty = conn.execute("select not exists (select 1 from raw.answers)").fetchone()[0]
+        if empty and (DATA_DIR / "history.jsonl.gz").exists():
+            print("loading history:", load_history(DATA_DIR / "history.jsonl.gz"))
+            print("pipeline:", run_pipeline()["metrics"].get("days"), "days")
+            from geo.insights.detect import run_insights
+            from geo.report.build import build_and_store
+            print("insights:", run_insights())
+            print("report:", build_and_store(None)[0])
 
 
 if __name__ == "__main__":
