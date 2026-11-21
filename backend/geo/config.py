@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
+import json
 import os
 from datetime import date
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -35,8 +36,23 @@ class Settings(BaseSettings):
     # Auth / product
     workos_api_key: str | None = None
     workos_client_id: str | None = None
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
+    # Accepts a JSON list or a comma-separated string; a typo here must not stop the API booting.
+    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=lambda: ["http://localhost:3000"])
     public_api_url: str = "http://localhost:8000"
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _origins(cls, v: object) -> object:
+        if not isinstance(v, str):
+            return v
+        text = v.strip().strip("'\"").strip()
+        if text.startswith("["):
+            try:
+                return [str(o).strip().rstrip("/") for o in json.loads(text.replace("'", '"'))]
+            except ValueError:
+                text = text.strip("[]")
+        origins = [o.strip().strip("'\"").rstrip("/") for o in text.split(",")]
+        return [o for o in origins if o] or ["http://localhost:3000"]
 
     # Chat
     anthropic_api_key: str | None = None
