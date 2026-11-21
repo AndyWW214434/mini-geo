@@ -39,7 +39,7 @@ class Settings(BaseSettings):
 
     # Chat
     anthropic_api_key: str | None = None
-    chat_model: str = "claude-sonnet-5-5"
+    chat_model: str = "claude-opus-5-5"
     mcp_url: str = "http://localhost:8000/mcp/"
 
     # Report
