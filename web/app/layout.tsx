@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { signOut, withAuth } from "@workos-inc/authkit-nextjs";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = { title: "Mini GEO", description: "How AI assistants mention your brand" };
 
@@ -17,7 +18,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <a href={`${process.env.API_URL ?? "http://localhost:8000"}/reports/stripe`} target="_blank">Stripe report</a>
           </nav>
           {user ? (
-            <form action={async () => { "use server"; await signOut({ returnTo: "/" }); }} className="row">
+            <form action={async () => { "use server"; await signOut({ returnTo: `${SITE_URL}/` }); }} className="row">
               <span className="muted">{user.email}</span>
               <button className="ghost" type="submit">Sign out</button>
             </form>
