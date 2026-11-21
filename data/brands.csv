@@ -1,0 +1,17 @@
+brand_id,name,categories,aliases,strict_aliases,domains
+stripe,Stripe,payments|billing|payouts|fraud,Stripe|Stripe Connect|Stripe Billing|Stripe Radar|Stripe Payments|Stripe Tax|Stripe Checkout,,stripe.com
+adyen,Adyen,payments|payouts|fraud,Adyen|Adyen for Platforms|Adyen RevenueProtect|Adyen Risk,,adyen.com
+braintree,Braintree,payments,Braintree|PayPal Braintree|Braintree Payments,,braintreepayments.com
+paypal,PayPal,payments|payouts,PayPal|PayPal Payouts|PayPal Commerce Platform|Hyperwallet,,paypal.com|hyperwallet.com
+square,Square,payments,Square Payments|Square POS|Squareup|Block's Square,Square,squareup.com
+checkout,Checkout.com,payments|fraud,Checkout.com|Checkout dot com,,checkout.com
+paddle,Paddle,billing,Paddle Billing|Paddle.com,Paddle,paddle.com
+chargebee,Chargebee,billing,Chargebee,,chargebee.com
+recurly,Recurly,billing,Recurly,,recurly.com
+lemonsqueezy,Lemon Squeezy,billing,Lemon Squeezy|LemonSqueezy,,lemonsqueezy.com
+tipalti,Tipalti,payouts,Tipalti,,tipalti.com
+payoneer,Payoneer,payouts,Payoneer,,payoneer.com
+wise,Wise,payouts,Wise Platform|Wise Business|TransferWise,Wise,wise.com
+sift,Sift,fraud,Sift Science|Sift.com,Sift,sift.com
+signifyd,Signifyd,fraud,Signifyd,,signifyd.com
+riskified,Riskified,fraud,Riskified,,riskified.com

@@ -1,0 +1,21 @@
+prompt_id,category,prompt
+pay-01,payments,What's the best payments API for a marketplace?
+pay-02,payments,Which payment processor has the lowest fees for a SaaS startup in the US?
+pay-03,payments,Best way to accept card payments in a mobile app in 2026?
+pay-04,payments,Stripe vs Adyen vs Braintree: which payment gateway should an e-commerce company use?
+pay-05,payments,Which payment provider supports the most local payment methods in Europe and Asia?
+bil-01,billing,What's the best subscription billing platform for a B2B SaaS company?
+bil-02,billing,How do I handle usage-based billing and metered pricing for an API product?
+bil-03,billing,Which billing tool handles sales tax and VAT automatically for software sales?
+bil-04,billing,Best alternative to building our own invoicing and dunning system?
+bil-05,billing,Should a small SaaS use a merchant of record or a payment processor for global sales?
+pyo-01,payouts,How can a marketplace pay out sellers in multiple countries?
+pyo-02,payouts,Best API for sending payouts to freelancers and contractors worldwide?
+pyo-03,payouts,What's the cheapest way for a platform to do instant payouts to debit cards?
+pyo-04,payouts,Which provider handles KYC and onboarding for marketplace sellers receiving payouts?
+pyo-05,payouts,How do gig economy apps split payments between the platform and workers?
+frd-01,fraud,What's the best fraud prevention tool for online card payments?
+frd-02,fraud,How do I reduce chargebacks for a subscription business?
+frd-03,fraud,Which payment fraud detection uses machine learning across a large network?
+frd-04,fraud,Best way to block card testing attacks on a checkout page?
+frd-05,fraud,Do I need a separate fraud tool if my payment processor already screens transactions?
