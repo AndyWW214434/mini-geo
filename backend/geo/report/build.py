@@ -35,6 +35,17 @@ def pts(x: float) -> str:
     return f"{abs(x) * 100:.0f} points"
 
 
+def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float] | None:
+    """95% interval for a share k/n; honest about small samples (20 answers -> about +/-20 points)."""
+    if not n:
+        return None
+    p = k / n
+    d = 1 + z * z / n
+    centre = (p + z * z / (2 * n)) / d
+    half = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d
+    return max(0.0, centre - half), min(1.0, centre + half)
+
+
 def day(d: date) -> str:
     return f"{d.day} {d.strftime('%b')}"
 
@@ -94,6 +105,7 @@ def _standing(ctx: Ctx) -> dict[str, Any]:
             leader = ranked[0] if ranked else None
             row["cells"].append({
                 "vis": me["vis"] if me else None, "rank": rank, "n": me["n"] if me else 0,
+                "ci": wilson(round(me["vis"] * me["n"]), me["n"]) if me else None,
                 "pos": float(me["pos"]) if me and me["pos"] else None,
                 "leader": ctx.names[leader["brand"]] if leader and leader["brand"] != ctx.focus else None,
                 "leader_vis": leader["vis"] if leader else None,
@@ -124,6 +136,69 @@ def _volume(ctx: Ctx) -> dict[str, Any]:
     prompts = ctx.conn.execute("select count(*) n from config.prompts where active").fetchone()["n"]
     return {"answers": r["total"], "real": r["ok"], "real_rate": r["ok"] / r["total"] if r["total"] else 0,
             "platforms": r["platforms"], "prompts": prompts, "sources": {x["source"]: x["n"] for x in src}}
+
+
+def _questions(ctx: Ctx, start: date, end: date) -> list[dict[str, Any]]:
+    """Every tracked question with the focus brand's result per assistant and the competitor named most."""
+    params = {"b": ctx.focus, "s": start, "e": end, "cats": ctx.focus_categories}
+    rows = ctx.conn.execute(
+        """select a.prompt_id, a.platform_id, count(*) n, count(m.brand_id) named
+           from parsed.metric_answers a
+           left join parsed.mentions m on m.raw_answer_id = a.raw_answer_id
+                and m.parser_version = a.parser_version and m.brand_id = %(b)s
+           where a.status = 'ok' and a.day between %(s)s and %(e)s group by 1, 2""", params).fetchall()
+    comp = ctx.conn.execute(
+        """select a.prompt_id, a.platform_id, m.brand_id, count(*) n
+           from parsed.metric_answers a
+           join parsed.mentions m on m.raw_answer_id = a.raw_answer_id and m.parser_version = a.parser_version
+           where a.status = 'ok' and a.day between %(s)s and %(e)s and m.brand_id <> %(b)s group by 1, 2, 3""",
+        params).fetchall()
+    out = []
+    for q in ctx.conn.execute("""select prompt_id, category, text from config.prompts
+                                 where category = any(%(cats)s) order by category, prompt_id""", params):
+        per = {r["platform_id"]: r for r in rows if r["prompt_id"] == q["prompt_id"]}
+        n = sum(r["n"] for r in per.values())
+        rivals: dict[str, int] = defaultdict(int)
+        for c in comp:
+            if c["prompt_id"] == q["prompt_id"]:
+                rivals[c["brand_id"]] += c["n"]
+        top = max(rivals.items(), key=lambda kv: kv[1], default=None)
+        out.append({**q, "n": n, "named": sum(r["named"] for r in per.values()),
+                    "per": {p: (per[p]["named"], per[p]["n"]) for p in per},
+                    "rival": ctx.names[top[0]] if top else None, "rival_rate": top[1] / n if top and n else None,
+                    "rivals_by_platform": {p: max(((ctx.names[c["brand_id"]], c["n"]) for c in comp
+                                                   if c["prompt_id"] == q["prompt_id"] and c["platform_id"] == p),
+                                                  key=lambda x: x[1], default=None) for p in per}})
+    return out
+
+
+def _collection(ctx: Ctx) -> dict[str, Any]:
+    r = ctx.conn.execute(
+        """select min(window_start) first, max(window_start) last, count(distinct window_start) windows
+           from raw.collection_runs where source = any(config.metrics_sources()) and status = 'collected'""").fetchone()
+    off = ctx.conn.execute("""select name, settings->>'inactive_reason' reason from config.platforms
+                              where not active order by name""").fetchall()
+    src = ctx.conn.execute("select config.metrics_sources() s").fetchone()["s"]
+    return {"first": r["first"], "last": r["last"], "windows": r["windows"], "excluded": off, "sources": src}
+
+
+def _cited_sites(ctx: Ctx, start: date, end: date, limit: int = 10) -> list[dict[str, Any]]:
+    params = {"s": start, "e": end}
+    totals = {r["platform_id"]: r["n"] for r in ctx.conn.execute(
+        """select platform_id, count(*) n from parsed.metric_answers
+           where status = 'ok' and day between %(s)s and %(e)s group by 1""", params)}
+    rows = ctx.conn.execute(
+        """select c.domain, a.platform_id, count(distinct a.raw_answer_id) n
+           from parsed.metric_answers a
+           join parsed.citations c on c.raw_answer_id = a.raw_answer_id and c.parser_version = a.parser_version
+           where a.status = 'ok' and a.day between %(s)s and %(e)s group by 1, 2""", params).fetchall()
+    by: dict[str, dict[str, float]] = defaultdict(dict)
+    for r in rows:
+        by[r["domain"]][r["platform_id"]] = r["n"] / totals[r["platform_id"]] if totals.get(r["platform_id"]) else 0
+    all_n = sum(totals.values()) or 1
+    ranked = sorted(by.items(), key=lambda kv: -sum(v * totals.get(p, 0) for p, v in kv[1].items()) / all_n)
+    return [{"domain": d, "rates": rates, "owner": ctx.names.get(ctx.owners.get(d, ""), None),
+             "overall": sum(v * totals.get(p, 0) for p, v in rates.items()) / all_n} for d, rates in ranked[:limit]]
 
 
 def _series(ctx: Ctx, platform: str, category: str, brands: list[str]) -> dict[str, list[tuple[date, float | None]]]:
@@ -419,7 +494,8 @@ def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]
     return [r for _, r in recs[:5]]
 
 
-def _weak_spot_recommendations(ctx: Ctx, standing: dict[str, Any], limit: int = 3) -> list[dict[str, str]]:
+def _weak_spot_recommendations(ctx: Ctx, standing: dict[str, Any], questions: list[dict[str, Any]],
+                               limit: int = 3) -> list[dict[str, str]]:
     """Without enough history to detect changes, act on today's weakest assistant-category cells:
     the competitor closest behind, and the sites that assistant cites for those questions."""
     F = ctx.names[ctx.focus]
@@ -449,11 +525,21 @@ def _weak_spot_recommendations(ctx: Ctx, standing: dict[str, Any], limit: int = 
                   f"in its first screen with specifics a model can quote ({QUOTABLE.get(cat, 'pricing, coverage, setup')}).")
         else:
             do = f"Publish a page that answers these {cat} questions directly, with quotable specifics."
+        missed = sorted([q for q in questions if q["category"] == cat and platform in q["per"]
+                         and q["per"][platform][1]], key=lambda q: q["per"][platform][0] / q["per"][platform][1])
+        miss_txt = ""
+        if missed and missed[0]["per"][platform][0] < missed[0]["per"][platform][1]:
+            q = missed[0]
+            k, n = q["per"][platform]
+            rv = q["rivals_by_platform"].get(platform)
+            miss_txt = (f" It is missed most on \u201c{q['text']}\u201d (named in {k} of {n} answers"
+                        + (f"; {rv[0]} named in {rv[1]})" if rv else ")") + ".")
         target = min(0.95, math.floor(round((vis + 0.10) * 20, 6)) / 20)
         recs.append({
             "title": f"Strengthen {F} in {cat} answers on {P}",
             "why": (f"This is {F}'s {ordinal[i]} spot: named in {pct(vis)} of {c['n']} real {cat} answers"
                     + (f", with {rival} at {pct(rival_vis)}" if rival and rival_vis is not None else "") + "."
+                    + miss_txt
                     + (f" The sites {P} cites most for these questions: {site_txt}." if site_txt else "")),
             "do": do,
             "watch": f"{F} named in at least {pct(target)} of {P} {cat} answers (now {pct(vis)}).",
@@ -522,6 +608,7 @@ def build(conn: psycopg.Connection, focus: str) -> tuple[str, uuid.UUID, date]:
         _write_story(ctx, s)
     standing = _standing(ctx)
     volume = _volume(ctx)
+    questions = _questions(ctx, standing["start"], standing["end"])
     watch = [f for f in relevant if f["confidence"] == "low"]
 
     env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]))
@@ -529,7 +616,8 @@ def build(conn: psycopg.Connection, focus: str) -> tuple[str, uuid.UUID, date]:
     html = env.get_template("report.html").render(
         brand=ctx.names[focus], ctx=ctx, standing=standing, stories=stories, issues=issues, volume=volume,
         summary=_summary(ctx, standing, stories, issues),
-        recommendations=_recommendations(ctx, stories, issues) or _weak_spot_recommendations(ctx, standing),
+        recommendations=_recommendations(ctx, stories, issues) or _weak_spot_recommendations(ctx, standing, questions),
+        questions=questions, collection=_collection(ctx), sites=_cited_sites(ctx, standing["start"], standing["end"]),
         watch=watch, history_days=(ctx.data_end - ctx.data_start).days + 1,
         heat=charts.heat, categories=ctx.focus_categories, synthetic=volume["sources"].get("synthetic", 0) > 0,
         generated=datetime.now(UTC).date(), batch_id=batch_id)

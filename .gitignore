@@ -11,3 +11,4 @@ data/history.jsonl
 .ruff_cache/
 out/
 .claude/
+DEFENCE_PREP.md
