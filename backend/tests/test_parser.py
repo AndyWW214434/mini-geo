@@ -42,6 +42,9 @@ def brands_in_order(rec: dict, platform: str = "chatgpt") -> list[tuple[str, int
     ({"url": "https://www.google.com/", "aio_text": "Stripe is a common choice.", "is_truncated": True,
       "input": {"url": "https://www.google.com/", "prompt": Q}}, "google_ai_mode", "truncated"),
     (chatgpt("Use Stripe Connect.\n\n- Stripe\n- Adyen"), "chatgpt", "ok"),
+    (chatgpt("Stripe Billing fits most SaaS.\n\nWant a breakdown of Paddle vs Lemon Squeezy?\n\nYes"), "chatgpt", "ok"),
+    (chatgpt("Use Stripe.\n\nWhich setup fits you?\n\nCompare top MoR platforms\n\nB2B vs. B2C tax rules"),
+     "chatgpt", "ok"),
     (chatgpt("| Provider | Best for |\n|---|---|\n| Stripe | marketplaces |"), "chatgpt", "ok"),
 ])
 def test_status(rec, platform, expected):

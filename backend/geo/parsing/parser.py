@@ -16,7 +16,7 @@ from geo.parsing.mentions import Mention, MentionMatcher
 from geo.parsing.urls import domain_of, host_of, normalize_url
 from geo.platforms import adapter
 
-PARSER_VERSION = "1.3.0"  # 1.3: escaped list numbers, ranking levels, closing options
+PARSER_VERSION = "1.3.1"  # 1.3: escaped list numbers, ranking levels, closing options; 1.3.1: options after "?"
 
 
 @dataclass(frozen=True)

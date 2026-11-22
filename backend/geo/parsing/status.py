@@ -59,10 +59,11 @@ def looks_truncated(text: str) -> str | None:
     last_line = stripped.splitlines()[-1].strip()
     if stripped[-1] in TERMINAL or last_line.startswith(("#", "|")):
         return None
-    # Assistants often end with follow-up options ("To narrow it down:\n\nCompare X vs Y"):
-    # a final run of short lines after a line ending in ':' is complete, not cut off.
+    # Assistants often end with follow-up options: "To narrow it down:\n\nCompare X vs Y", or a
+    # question plus answer buttons, "Want a breakdown of Paddle vs Lemon Squeezy?\n\nYes".
+    # A final run of short lines after a line ending in ':' or '?' is complete, not cut off.
     lines = [ln.strip() for ln in stripped.splitlines() if ln.strip()]
-    colon = max((i for i, ln in enumerate(lines) if ln.endswith(":")), default=None)
+    colon = max((i for i, ln in enumerate(lines) if ln.endswith((":", "?"))), default=None)
     if colon is not None and 0 < len(lines) - colon - 1 <= 6 and all(len(ln.split()) <= 12 for ln in lines[colon + 1:]):
         return None
     # A short list item ("- Square") legitimately has no full stop; a long one usually does.
