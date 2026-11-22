@@ -8,7 +8,6 @@ All activities are idempotent so Temporal can retry them freely:
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -125,22 +124,17 @@ def snapshot_state(ref: SnapshotRef) -> str:
 
 @activity.defn
 def ingest_snapshot(ref: SnapshotRef) -> dict[str, int]:
-    """Download, keep the body byte-for-byte, store one raw row per prompt."""
+    """Download (streamed, page dumps slimmed), keep the snapshot, store one raw row per prompt."""
     try:
-        body = source_for(ref.source).download(ref.snapshot_id)
+        snap = source_for(ref.source).records(ref.snapshot_id)
     except RateLimited as exc:
         raise ApplicationError(str(exc), type="RateLimited") from exc
-    records = json.loads(body)
-    if isinstance(records, dict):  # some endpoints wrap results
-        records = records.get("data") or records.get("results") or [records]
-    records = [pipeline.slim_record(r) for r in records if isinstance(r, dict)]
+    records = snap.records
     window = datetime.fromisoformat(ref.window_start)
-    raw_bytes = body.encode()
     with connection() as conn:
         conn.execute("""insert into raw.snapshots (snapshot_id, run_id, body, original_bytes, original_sha256)
                         values (%s, %s, %s, %s, %s) on conflict do nothing""",
-                     (ref.snapshot_id, ref.run_id, json.dumps(records), len(raw_bytes),
-                      hashlib.sha256(raw_bytes).hexdigest()))
+                     (ref.snapshot_id, ref.run_id, json.dumps(records), snap.original_bytes, snap.original_sha256))
         by_text = {_norm(r["text"]): r["prompt_id"] for r in conn.execute("select prompt_id, text from config.prompts")}
         rows, unmatched = [], 0
         for rec in records:

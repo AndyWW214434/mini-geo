@@ -7,6 +7,7 @@ not care whether answers come from Bright Data or from the synthetic generator.
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass
 from datetime import date, datetime
@@ -38,6 +39,14 @@ class AnswerSource(Protocol):
     def trigger(self, platform_id: str, dataset_id: str, inputs: list[dict[str, Any]], window: str) -> str: ...
     def status(self, snapshot_id: str) -> SnapshotStatus: ...
     def download(self, snapshot_id: str) -> str: ...
+    def records(self, snapshot_id: str) -> SnapshotRecords: ...
+
+
+@dataclass
+class SnapshotRecords:
+    records: list[dict[str, Any]]   # slimmed: page dumps replaced by size + hash
+    original_bytes: int
+    original_sha256: str
 
 
 class BrightDataSource:
@@ -69,6 +78,32 @@ class BrightDataSource:
             return SnapshotStatus("failed", json.dumps(body)[:500])
         return SnapshotStatus("running")
 
+    def records(self, snapshot_id: str) -> SnapshotRecords:
+        """Stream the snapshot one record per line and slim each as it arrives.
+
+        A 20-answer snapshot is ~80 MB of page dumps; loading it whole ran a 512 MB worker out of
+        memory. Memory now holds one record at a time.
+        """
+        from geo.etl.pipeline import slim_record
+
+        digest, size, out = hashlib.sha256(), 0, []
+        with self._http.stream("GET", f"{self.base}/snapshot/{snapshot_id}", params={"format": "jsonl"},
+                               timeout=httpx.Timeout(60, read=600)) as resp:
+            if resp.status_code == 202:
+                raise RateLimited("snapshot not ready for download")
+            if resp.status_code >= 400:
+                resp.read()
+                self._check(resp)
+            for line in resp.iter_lines():
+                data = line.encode()
+                digest.update(data + b"\n")
+                size += len(data) + 1
+                if line.strip():
+                    rec = json.loads(line)
+                    if isinstance(rec, dict):
+                        out.append(slim_record(rec))
+        return SnapshotRecords(out, size, digest.hexdigest())
+
     def download(self, snapshot_id: str) -> str:
         resp = self._check(self._http.get(f"{self.base}/snapshot/{snapshot_id}", params={"format": "json"}))
         if resp.status_code == 202:  # still building the file
@@ -94,6 +129,10 @@ class SyntheticSource:
 
     def status(self, snapshot_id: str) -> SnapshotStatus:
         return SnapshotStatus("ready")
+
+    def records(self, snapshot_id: str) -> SnapshotRecords:
+        body = self.download(snapshot_id)
+        return SnapshotRecords(json.loads(body), len(body.encode()), hashlib.sha256(body.encode()).hexdigest())
 
     def download(self, snapshot_id: str) -> str:
         spec = json.loads(snapshot_id.removeprefix("synthetic:"))
