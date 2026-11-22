@@ -11,7 +11,7 @@ import math
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -58,7 +58,10 @@ def _ctx(conn: psycopg.Connection, focus: str) -> Ctx:
     if focus not in names:
         raise ValueError(f"unknown brand {focus!r}")
     platforms = {r["platform_id"]: r["name"] for r in conn.execute(
-        "select platform_id, name from config.platforms where active order by platform_id")}
+        """select platform_id, name from config.platforms p
+           where exists (select 1 from mart.daily_visibility v where v.platform_id = p.platform_id
+                         and v.real_answers > 0)
+           order by platform_id""")}  # assistants with real answers in the data, active or not
     owners = {d: r["brand_id"] for r in conn.execute("select brand_id, domains from config.brands")
               for d in r["domains"]}
     cats = [r["category"] for r in conn.execute(
@@ -69,7 +72,7 @@ def _ctx(conn: psycopg.Connection, focus: str) -> Ctx:
 
 def _standing(ctx: Ctx) -> dict[str, Any]:
     """Last-7-day pooled visibility per platform x category, excluding data-issue days."""
-    start = ctx.data_end - timedelta(days=CURRENT_DAYS - 1)
+    start = max(ctx.data_start, ctx.data_end - timedelta(days=CURRENT_DAYS - 1))
     rows = ctx.conn.execute(
         """select platform_id, category, brand_id, sum(mentioning_answers) k, sum(real_answers) n,
                   sum(avg_position * mentioning_answers) / nullif(sum(mentioning_answers), 0) pos
@@ -416,13 +419,55 @@ def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]
     return [r for _, r in recs[:5]]
 
 
+def _weak_spot_recommendations(ctx: Ctx, standing: dict[str, Any], limit: int = 3) -> list[dict[str, str]]:
+    """Without enough history to detect changes, act on today's weakest assistant-category cells:
+    the competitor closest behind, and the sites that assistant cites for those questions."""
+    F = ctx.names[ctx.focus]
+    cells = []
+    for row in standing["rows"]:
+        for cat, c in zip(ctx.focus_categories, row["cells"], strict=True):
+            if c["vis"] is not None and c["n"]:
+                cells.append((c["vis"], row["platform_id"], cat, c))
+    recs = []
+    ordinal = ["weakest", "second-weakest", "third-weakest", "fourth-weakest", "fifth-weakest"]
+    for i, (vis, platform, cat, c) in enumerate(sorted(cells, key=lambda x: x[0])[:limit]):
+        P = ctx.platforms[platform]
+        sites = ctx.conn.execute(
+            """select domain, sum(citing_answers)::numeric / nullif(sum(real_answers), 0) rate
+               from mart.daily_citations where platform_id = %s and category = %s and day between %s and %s
+               group by domain order by rate desc nulls last limit 3""",
+            (platform, cat, standing["start"], standing["end"])).fetchall()
+        site_txt = ", ".join(f"{s['domain']} ({pct(float(s['rate']))})" for s in sites if s["rate"])
+        rival = c["leader"] or c.get("runner_up")
+        rival_vis = c["leader_vis"] if c["leader"] else (vis - c["gap"] if c["gap"] is not None else None)
+        own = [s for s in sites if ctx.owners.get(s["domain"]) == ctx.focus]
+        third = [s for s in sites if not ctx.owners.get(s["domain"])]
+        if third:
+            do = _play(third[0]["domain"], F)
+        elif own:
+            do = (f"{P} already leans on {own[0]['domain']} here; make that page answer these questions "
+                  f"in its first screen with specifics a model can quote ({QUOTABLE.get(cat, 'pricing, coverage, setup')}).")
+        else:
+            do = f"Publish a page that answers these {cat} questions directly, with quotable specifics."
+        target = min(0.95, math.floor(round((vis + 0.10) * 20, 6)) / 20)
+        recs.append({
+            "title": f"Strengthen {F} in {cat} answers on {P}",
+            "why": (f"This is {F}'s {ordinal[i]} spot: named in {pct(vis)} of {c['n']} real {cat} answers"
+                    + (f", with {rival} at {pct(rival_vis)}" if rival and rival_vis is not None else "") + "."
+                    + (f" The sites {P} cites most for these questions: {site_txt}." if site_txt else "")),
+            "do": do,
+            "watch": f"{F} named in at least {pct(target)} of {P} {cat} answers (now {pct(vis)}).",
+            "owner": "Marketing / developer relations"})
+    return recs
+
+
 def _summary(ctx: Ctx, standing: dict[str, Any], stories: list[Story], issues: list[dict[str, Any]]) -> list[str]:
     F = ctx.names[ctx.focus]
     lines = []
     leads = sum(1 for r in standing["rows"] for c in r["cells"] if c["rank"] == 1)
     total = sum(1 for r in standing["rows"] for c in r["cells"] if c["rank"])
     lines.append(f"Across {len(ctx.platforms)} assistants, {F} was named in {pct(standing['overall'])} of "
-                 f"{standing['overall_n']:,} relevant answers in the last {CURRENT_DAYS} days. It is the most-named "
+                 f"{standing['overall_n']:,} relevant answers ({_span({'start': standing['start'], 'end': standing['end']})}). It is the most-named "
                  f"brand in {leads} of {total} assistant-and-category pairs.")
     losses = [s for s in stories if any(f["brand_id"] == ctx.focus and f["after"] < f["before"] for f in s.findings)]
     if losses:
@@ -455,8 +500,11 @@ def _span(ev: dict[str, Any]) -> str:
 # ------------------------------------------------------------------------------ build
 def build(conn: psycopg.Connection, focus: str) -> tuple[str, uuid.UUID, date]:
     ctx = _ctx(conn, focus)
-    batch = conn.execute("select batch_id from mart.insights order by generated_at desc limit 1").fetchone()
-    if not batch:
+    # The latest insights run, even when it found nothing (an empty batch writes no insight rows).
+    batch = conn.execute("""select detail->>'batch' as batch_id from ops.pipeline_runs
+                            where step = 'insights' and status = 'succeeded'
+                            order by started_at desc limit 1""").fetchone()
+    if not batch or not batch["batch_id"]:
         raise RuntimeError("no insights yet: run `geo insights` first")
     batch_id = batch["batch_id"]
     rows = conn.execute("select * from mart.insights where batch_id = %s order by insight_id", (batch_id,)).fetchall()
@@ -481,9 +529,10 @@ def build(conn: psycopg.Connection, focus: str) -> tuple[str, uuid.UUID, date]:
     html = env.get_template("report.html").render(
         brand=ctx.names[focus], ctx=ctx, standing=standing, stories=stories, issues=issues, volume=volume,
         summary=_summary(ctx, standing, stories, issues),
-        recommendations=_recommendations(ctx, stories, issues), watch=watch,
+        recommendations=_recommendations(ctx, stories, issues) or _weak_spot_recommendations(ctx, standing),
+        watch=watch, history_days=(ctx.data_end - ctx.data_start).days + 1,
         heat=charts.heat, categories=ctx.focus_categories, synthetic=volume["sources"].get("synthetic", 0) > 0,
-        generated=date.today(), batch_id=batch_id)
+        generated=datetime.now(UTC).date(), batch_id=batch_id)
     return html, batch_id, ctx.data_end
 
 

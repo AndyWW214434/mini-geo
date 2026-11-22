@@ -40,7 +40,7 @@
 </head>
 <body>
 <main>
-  <p class="meta">Prepared for {{ brand }} marketing and developer relations · data {{ ctx.data_start|day }} – {{ ctx.data_end|day }} {{ ctx.data_end.year }} · generated {{ generated|day }} {{ generated.year }}</p>
+  <p class="meta">Prepared for {{ brand }} marketing and developer relations · data {{ {"start": ctx.data_start, "end": ctx.data_end}|span }} {{ ctx.data_end.year }} (UTC) · generated {{ generated|day }} {{ generated.year }}</p>
   <h1>{{ brand }} in AI answers</h1>
   <p class="meta">How {{ volume.platforms }} AI assistants mention {{ brand }} and its competitors when buyers ask {{ volume.prompts }} questions about {{ categories|join(", ") }}.</p>
 
@@ -55,7 +55,7 @@
   </section>
 
   <h2>1. Where {{ brand }} stands</h2>
-  <p>Share of real answers that name {{ brand }}, last {{ (standing.end - standing.start).days + 1 }} days ({{ standing.start|day }} – {{ standing.end|day }}), by assistant and question category.
+  <p>Share of real answers that name {{ brand }}, {{ {"start": standing.start, "end": standing.end}|span }} ({{ (standing.end - standing.start).days + 1 }} day{{ "s" if (standing.end - standing.start).days else "" }}), by assistant and question category.
      Rank is among the brands that compete in that category. Where {{ brand }} is not first, the leader is shown.</p>
   <table>
     <thead><tr><th>Assistant</th>{% for c in categories %}<th>{{ c|capitalize }}</th>{% endfor %}<th class="num">All</th><th class="num">Avg. position</th></tr></thead>
@@ -79,7 +79,13 @@
 
   <h2>2. What changed</h2>
   {% if not stories %}
-    <p>No change in the last 30 days passed the tests in the appendix.</p>
+    {% if history_days < 8 %}
+    <p>Not measurable yet. This report covers {{ history_days }} day{{ "s" if history_days != 1 else "" }} of collection
+       ({{ {"start": ctx.data_start, "end": ctx.data_end}|span }}); detecting a change needs at least four days on each side of it.
+       Until then, the recommendations below act on where {{ brand }} is weakest today.</p>
+    {% else %}
+    <p>No change in the period passed the tests in the appendix.</p>
+    {% endif %}
   {% endif %}
   {% for s in stories %}
   <div class="story">

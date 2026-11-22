@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stripe in AI answers</title>
+<style>
+  :root { --ink:#1d1d24; --muted:#5f6270; --line:#e3e3ea; --accent:#5b4fe0; --warn:#b35c00; --bg:#ffffff; --soft:#f6f6f9; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.55 -apple-system, "Segoe UI", Inter, Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+  h1 { font-size: 30px; line-height:1.2; margin: 0 0 6px; letter-spacing:-0.01em; }
+  h2 { font-size: 20px; margin: 48px 0 12px; padding-top: 16px; border-top: 1px solid var(--line); }
+  h3 { font-size: 16px; margin: 28px 0 6px; }
+  p { margin: 0 0 12px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .lede p { font-size: 16.5px; }
+  .notice { background: #fff6e6; border: 1px solid #f1d7a6; padding: 10px 14px; border-radius: 6px; font-size: 13.5px; margin: 20px 0; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin: 8px 0 6px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .cell small { color: var(--muted); display:block; font-size: 11.5px; }
+  .tag { display:inline-block; font-size: 11px; font-weight:600; padding: 1px 7px; border-radius: 10px; vertical-align: 2px; }
+  .tag.high { background:#e6f4ea; color:#1e6b34; } .tag.medium { background:#fff3d6; color:#8a5a00; } .tag.low { background:#eee; color:#555; }
+  .story { margin: 22px 0 30px; }
+  .chart { width:100%; height:auto; margin: 6px 0 4px; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .change { stroke: #999; stroke-dasharray: 4 3; }
+  .chart .axis { font-size: 10px; fill: var(--muted); }
+  .chart .label { font-size: 11px; font-weight: 600; }
+  .why { color: var(--muted); font-size: 13px; }
+  ol.recs { padding-left: 20px; } ol.recs li { margin-bottom: 14px; }
+  ol.recs .owner { color: var(--muted); font-size: 12.5px; }
+  ol.recs .watch { display: block; margin-top: 4px; font-size: 13.5px; }
+  .small { font-size: 13px; color: var(--muted); }
+  code { font-size: 12.5px; background: var(--soft); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+  @media print { main { padding: 0; } h2 { break-after: avoid; } .story { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">Prepared for Stripe marketing and developer relations · data 22 Oct – 20 Nov 2026 · generated 21 Nov 2026</p>
+  <h1>Stripe in AI answers</h1>
+  <p class="meta">How 6 AI assistants mention Stripe and its competitors when buyers ask 20 questions about billing, fraud, payments, payouts.</p>
+
+  
+  <div class="notice"><strong>Synthetic data.</strong> No production answer history was available for this build, so the
+    14,400 answers behind this report come from the pipeline's synthetic generator, which mimics Bright Data's
+    output and contains planted changes. The method, tables and wording are the real product; the market conclusions are not.</div>
+  
+
+  <section class="lede">
+    <p>Across 6 assistants, Stripe was named in 81% of 3,105 relevant answers in the last 7 days. It is the most-named brand in 23 of 24 assistant-and-category pairs.</p><p>The one real loss is billing on ChatGPT: 84% to 46% from 12 Nov.</p><p>Adyen gained on Perplexity (24% to 78% in payouts); Stripe is still named as often there but now appears later in the answer.</p><p>Two apparent drops were collection problems, not market moves (Google AI Mode 16–19 Nov; Grok 2–3 Nov). They are excluded from the analysis.</p>
+  </section>
+
+  <h2>1. Where Stripe stands</h2>
+  <p>Share of real answers that name Stripe, last 7 days (14 Nov – 20 Nov), by assistant and question category.
+     Rank is among the brands that compete in that category. Where Stripe is not first, the leader is shown.</p>
+  <table>
+    <thead><tr><th>Assistant</th><th>Billing</th><th>Fraud</th><th>Payments</th><th>Payouts</th><th class="num">All</th><th class="num">Avg. position</th></tr></thead>
+    <tbody>
+    
+      <tr>
+        <td>ChatGPT</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.32)">
+            <strong>48%</strong> · #3
+            <small>Paddle 83%</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>83%</strong> · #1
+            <small>+31 vs Sift</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.51)">
+            <strong>86%</strong> · #1
+            <small>+34 vs PayPal</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.51)">
+            <strong>87%</strong> · #1
+            <small>+21 vs PayPal</small>
+          </td>
+        
+        <td class="num">76%</td>
+        <td class="num">1.4</td>
+      </tr>
+    
+      <tr>
+        <td>Microsoft Copilot</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.52)">
+            <strong>88%</strong> · #1
+            <small>+32 vs Chargebee</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.46)">
+            <strong>75%</strong> · #1
+            <small>+15 vs Sift</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.55)">
+            <strong>93%</strong> · #1
+            <small>+33 vs PayPal</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>83%</strong> · #1
+            <small>+10 vs PayPal</small>
+          </td>
+        
+        <td class="num">85%</td>
+        <td class="num">1.1</td>
+      </tr>
+    
+      <tr>
+        <td>Gemini</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.50)">
+            <strong>85%</strong> · #1
+            <small>+21 vs Chargebee</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>81%</strong> · #1
+            <small>+32 vs Signifyd</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.54)">
+            <strong>92%</strong> · #1
+            <small>+26 vs PayPal</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.51)">
+            <strong>85%</strong> · #1
+            <small>+9 vs PayPal</small>
+          </td>
+        
+        <td class="num">86%</td>
+        <td class="num">1.1</td>
+      </tr>
+    
+      <tr>
+        <td>Google AI Mode</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.45)">
+            <strong>73%</strong> · #1
+            <small>+13 vs Chargebee</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.45)">
+            <strong>75%</strong> · #1
+            <small>+23 vs Sift</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.50)">
+            <strong>85%</strong> · #1
+            <small>+25 vs PayPal</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.50)">
+            <strong>84%</strong> · #1
+            <small>+15 vs PayPal</small>
+          </td>
+        
+        <td class="num">79%</td>
+        <td class="num">1.1</td>
+      </tr>
+    
+      <tr>
+        <td>Grok</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.45)">
+            <strong>73%</strong> · #1
+            <small>+10 vs Chargebee</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.45)">
+            <strong>73%</strong> · #1
+            <small>+22 vs Sift</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>81%</strong> · #1
+            <small>+30 vs PayPal</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.44)">
+            <strong>72%</strong> · #1
+            <small>+14 vs PayPal</small>
+          </td>
+        
+        <td class="num">75%</td>
+        <td class="num">1.2</td>
+      </tr>
+    
+      <tr>
+        <td>Perplexity</td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.50)">
+            <strong>84%</strong> · #1
+            <small>+22 vs Chargebee</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>83%</strong> · #1
+            <small>+26 vs Sift</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.54)">
+            <strong>91%</strong> · #1
+            <small>+19 vs Adyen</small>
+          </td>
+        
+          <td class="cell" style="background: rgba(91, 79, 224, 0.49)">
+            <strong>82%</strong> · #1
+            <small>+6 vs Adyen</small>
+          </td>
+        
+        <td class="num">85%</td>
+        <td class="num">1.4</td>
+      </tr>
+    
+    </tbody>
+  </table>
+  <p class="small">Position 1 means Stripe was the first brand recommended. Days with collection problems are included here; see section 4.</p>
+
+  <h2>2. What changed</h2>
+  
+  
+  <div class="story">
+    <h3>Stripe lost 38 points of billing visibility on ChatGPT; Paddle gained 31 points <span class="tag high">high confidence</span></h3>
+    <p>In billing answers on ChatGPT, from 12 Nov: Stripe 84% → 46%, Paddle 50% → 81%. Based on 401 real answers before and 178 after. Stripe&#39;s average position moved from 1.0 to 3.1. Paddle&#39;s average position moved from 2.5 to 1.0.</p>
+    <svg viewBox="0 0 640 190" role="img" class="chart" xmlns="http://www.w3.org/2000/svg"><line x1="36" x2="520" y1="164.0" y2="164.0" class="grid"/><text x="30" y="167.0" class="axis" text-anchor="end">0%</text><line x1="36" x2="520" y1="126.0" y2="126.0" class="grid"/><text x="30" y="129.0" class="axis" text-anchor="end">25%</text><line x1="36" x2="520" y1="88.0" y2="88.0" class="grid"/><text x="30" y="91.0" class="axis" text-anchor="end">50%</text><line x1="36" x2="520" y1="50.0" y2="50.0" class="grid"/><text x="30" y="53.0" class="axis" text-anchor="end">75%</text><line x1="36" x2="520" y1="12.0" y2="12.0" class="grid"/><text x="30" y="15.0" class="axis" text-anchor="end">100%</text><line x1="386.5" x2="386.5" y1="12" y2="164" class="change"/><text x="390.5" y="22" class="axis">12 Nov</text><text x="36.0" y="182" class="axis" text-anchor="middle">22 Oct</text><text x="520.0" y="182" class="axis" text-anchor="middle">20 Nov</text><polyline points="36.0,28.9 52.7,44.0 69.4,36.0 86.1,57.6 102.8,44.0 119.4,28.9 136.1,19.6 152.8,44.0 169.5,34.8 186.2,54.2 202.9,34.8 219.6,65.2 236.3,19.6 253.0,42.4 269.7,29.9 286.3,42.4 303.0,36.0 319.7,20.4 336.4,36.0 353.1,37.3 369.8,12.0 386.5,110.8 403.2,103.2 419.9,103.2 436.6,108.0 453.2,103.2 469.9,100.0 486.6,65.2 503.3,88.0 520.0,72.8" fill="none" stroke="#5b4fe0" stroke-width="2.4"/><text x="526" y="76.8" class="label" fill="#5b4fe0">Stripe</text><polyline points="36.0,88.0 52.7,84.0 69.4,84.0 86.1,72.8 102.8,100.0 119.4,96.4 136.1,110.8 152.8,84.0 169.5,88.0 186.2,79.6 202.9,88.0 219.6,103.2 236.3,57.6 253.0,80.4 269.7,92.5 286.3,95.6 303.0,100.0 319.7,79.6 336.4,92.0 353.1,79.6 369.8,80.4 386.5,34.8 403.2,57.6 419.9,42.4 436.6,28.0 453.2,34.8 469.9,36.0 486.6,50.0 503.3,34.8 520.0,42.4" fill="none" stroke="#d9480f" stroke-width="1.6"/><text x="526" y="46.4" class="label" fill="#d9480f">Paddle</text></svg>
+    <p class="small">Daily visibility in billing answers on ChatGPT. Dashed line: change date. Gaps: days excluded for data problems.</p>
+    
+      <p><strong>What the assistant started and stopped citing.</strong> Share of ChatGPT answers in this category that cite each site, before and after 12 Nov:</p>
+      <table>
+        <thead><tr><th>Site</th><th>Page that moved most</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+        <tbody>
+        
+          <tr><td>paddle.com <span class="small">(Paddle)</span></td>
+              <td><code>https://www.paddle.com/resources/merchant-of-record</code></td>
+              <td class="num">20%</td><td class="num">73%</td></tr>
+        
+          <tr><td>reddit.com</td>
+              <td><code>https://www.reddit.com/r/SaaS/comments/1gq7x2k/stripe_billing_vs_paddle_after_tax_changes/</code></td>
+              <td class="num">2%</td><td class="num">44%</td></tr>
+        
+          <tr><td>stripe.com <span class="small">(Stripe)</span></td>
+              <td><code>https://docs.stripe.com/billing</code></td>
+              <td class="num">79%</td><td class="num">43%</td></tr>
+        
+        </tbody>
+      </table>
+      
+      
+        
+        
+        <p class="why">The citation shift and the visibility change start on the same day, but within single answers we cannot show that citing paddle.com changes whether Stripe is named
+          (42% when cited, 54% otherwise, a gap within noise at these sample sizes). Read these sites as a sign of what the assistant now relies on, not as proof of cause.</p>
+        
+      
+    
+    
+      <p class="why">Largest single-question move for Stripe: “What&#39;s the best subscription billing platform for a B2B SaaS company?”, 86% to 43%.</p>
+    
+    <p class="why">Why we believe it: the gap is far beyond chance (p = 2.8e-21; the bar after correcting for 138 series is 3.6e-04), 89% of days sit on their side of the change, and 5 of 5 billing questions moved the same way.</p>
+  </div>
+  
+  <div class="story">
+    <h3>Adyen gained 42–54 points on Perplexity in payments and payouts answers <span class="tag high">high confidence</span></h3>
+    <p>In payments answers on Perplexity, from 9 Nov: Adyen 37% → 78%. Based on 341 real answers before and 226 after. Adyen&#39;s average position moved from 3.0 to 1.1. Stripe was named in 93% of answers before and 90% after, but it is now recommended later in the answer: average position 1.0 before, 1.8 after.</p><p>In payouts answers on Perplexity, from 9 Nov: Adyen 24% → 78%. Based on 343 real answers before and 231 after. Adyen&#39;s average position moved from 3.5 to 1.0. Stripe was named in 83% of answers before and 83% after, but it is now recommended later in the answer: average position 1.1 before, 1.8 after.</p>
+    <svg viewBox="0 0 640 190" role="img" class="chart" xmlns="http://www.w3.org/2000/svg"><line x1="36" x2="520" y1="164.0" y2="164.0" class="grid"/><text x="30" y="167.0" class="axis" text-anchor="end">0%</text><line x1="36" x2="520" y1="126.0" y2="126.0" class="grid"/><text x="30" y="129.0" class="axis" text-anchor="end">25%</text><line x1="36" x2="520" y1="88.0" y2="88.0" class="grid"/><text x="30" y="91.0" class="axis" text-anchor="end">50%</text><line x1="36" x2="520" y1="50.0" y2="50.0" class="grid"/><text x="30" y="53.0" class="axis" text-anchor="end">75%</text><line x1="36" x2="520" y1="12.0" y2="12.0" class="grid"/><text x="30" y="15.0" class="axis" text-anchor="end">100%</text><line x1="336.4" x2="336.4" y1="12" y2="164" class="change"/><text x="340.4" y="22" class="axis">9 Nov</text><text x="36.0" y="182" class="axis" text-anchor="middle">22 Oct</text><text x="520.0" y="182" class="axis" text-anchor="middle">20 Nov</text><polyline points="36.0,19.6 52.7,28.0 69.4,36.0 86.1,50.0 102.8,28.0 119.4,42.4 136.1,28.9 152.8,47.8 169.5,28.0 186.2,36.0 202.9,37.3 219.6,36.0 236.3,50.0 253.0,36.0 269.7,27.2 286.3,44.0 303.0,71.1 319.7,50.0 336.4,44.0 353.1,44.0 369.8,42.4 386.5,20.0 403.2,20.4 419.9,27.2 436.6,27.2 453.2,34.8 469.9,47.8 486.6,50.0 503.3,65.2 520.0,28.0" fill="none" stroke="#5b4fe0" stroke-width="2.4"/><text x="526" y="32.0" class="label" fill="#5b4fe0">Stripe</text><polyline points="36.0,110.8 52.7,124.0 69.4,132.0 86.1,103.2 102.8,148.0 119.4,141.2 136.1,164.0 152.8,146.1 169.5,140.0 186.2,132.0 202.9,121.8 219.6,92.0 236.3,148.8 253.0,132.0 269.7,141.2 286.3,84.0 303.0,130.2 319.7,118.4 336.4,20.0 353.1,52.0 369.8,57.6 386.5,28.0 403.2,45.8 419.9,42.4 436.6,50.0 453.2,19.6 469.9,38.8 486.6,57.6 503.3,72.8 520.0,60.0" fill="none" stroke="#d9480f" stroke-width="1.6"/><text x="526" y="64.0" class="label" fill="#d9480f">Adyen</text></svg>
+    <p class="small">Daily visibility in payouts answers on Perplexity. Dashed line: change date. Gaps: days excluded for data problems.</p>
+    
+      <p><strong>What the assistant started and stopped citing.</strong> Share of Perplexity answers in this category that cite each site, before and after 9 Nov:</p>
+      <table>
+        <thead><tr><th>Site</th><th>Page that moved most</th><th class="num">Before</th><th class="num">After</th></tr></thead>
+        <tbody>
+        
+          <tr><td>adyen.com <span class="small">(Adyen)</span></td>
+              <td><code>https://www.adyen.com/knowledge-hub/marketplace-payments-guide</code></td>
+              <td class="num">12%</td><td class="num">64%</td></tr>
+        
+          <tr><td>g2.com</td>
+              <td><code>https://www.g2.com/compare/adyen-vs-stripe</code></td>
+              <td class="num">4%</td><td class="num">52%</td></tr>
+        
+        </tbody>
+      </table>
+      
+      
+        
+        
+        <p class="why">The citation shift and the visibility change start on the same day, but within single answers we cannot show that citing adyen.com changes whether Adyen is named
+          (75% when cited, 83% otherwise, a gap within noise at these sample sizes). Read these sites as a sign of what the assistant now relies on, not as proof of cause.</p>
+        
+      
+    
+    
+      <p class="why">Largest single-question move for Adyen: “How can a marketplace pay out sellers in multiple countries?”, 21% to 80%.</p>
+    
+    <p class="why">Why we believe it: the gap is far beyond chance (p = 1.4e-37; the bar after correcting for 138 series is 3.6e-04), 94% of days sit on their side of the change, and 5 of 5 payouts questions moved the same way.</p>
+  </div>
+  
+
+  <h2>3. What to do</h2>
+  
+  <ol class="recs">
+    
+      <li><strong>Find out why ChatGPT cites https://docs.stripe.com/billing less.</strong> Pages on stripe.com appeared in 79% of ChatGPT billing answers before 12 Nov and 43% since, and this page fell the most. In the same period Stripe&#39;s billing visibility on ChatGPT fell 38 points. Check the page is crawlable by the assistant&#39;s search crawler, that its content is current, and that it answers the questions buyers ask in its first screen.
+        <span class="watch">Success: pages on stripe.com cited in at least 65% of ChatGPT answers in this category (now 43%; 79% before 12 Nov).</span> <span class="owner">Owner: Developer relations / docs.</span></li>
+    
+      <li><strong>Publish Stripe&#39;s answer to the question Paddle now owns on ChatGPT.</strong> paddle.com went from 20% to 73% of ChatGPT billing answers, led by https://www.paddle.com/resources/merchant-of-record. The biggest single drop is on “What&#39;s the best subscription billing platform for a B2B SaaS company?” (86% to 43%). Write a page that answers that question directly and fairly compares Stripe with Paddle, with specifics a model can quote (pricing, tax handling, usage-based and invoicing features).
+        <span class="watch">Success: Stripe named in at least 70% of ChatGPT billing answers (now 46%; 84% before 12 Nov).</span> <span class="owner">Owner: Product marketing.</span></li>
+    
+      <li><strong>Get Stripe represented on https://www.reddit.com/r/SaaS/comments/1gq7x2k/stripe_billing_vs_paddle_after_tax_changes/.</strong> ChatGPT now cites reddit.com in 44% of billing answers, up from 2%, and this is the page that rose most. Paddle rose 31 points over the same days. Have a named Stripe employee answer in the thread with a disclosed, factual reply that addresses the question asked; do not astroturf.
+        <span class="watch">Success: Stripe named in at least 70% of ChatGPT billing answers (now 46%; 84% before 12 Nov).</span> <span class="owner">Owner: Marketing / community.</span></li>
+    
+      <li><strong>Get Stripe represented on https://www.g2.com/compare/adyen-vs-stripe.</strong> Perplexity now cites g2.com in 52% of payouts answers, up from 4%, and this is the page that rose most. Adyen rose 54 points over the same days. Update Stripe&#39;s profile and comparison data on the site and ask current customers in this category for reviews; comparison pages are built from that data.
+        <span class="watch">Success: Stripe&#39;s average position in Perplexity payouts answers back to 1.2 or better (now 1.8; 1.1 before 9 Nov).</span> <span class="owner">Owner: Marketing / community.</span></li>
+    
+      <li><strong>Publish Stripe&#39;s answer to the question Adyen now owns on Perplexity.</strong> adyen.com went from 12% to 64% of Perplexity payouts answers, led by https://www.adyen.com/knowledge-hub/marketplace-payments-guide. Write a page that answers that question directly and fairly compares Stripe with Adyen, with specifics a model can quote (payout countries and speed, onboarding and KYC, fees).
+        <span class="watch">Success: Stripe&#39;s average position in Perplexity payouts answers back to 1.2 or better (now 1.8; 1.1 before 9 Nov).</span> <span class="owner">Owner: Product marketing.</span></li>
+    
+  </ol>
+  
+
+  <h2>4. How much to trust this</h2>
+  <p>14,400 answers were collected; 94% were real, complete answers. The rest were scraper errors, empty or blocked pages, cut-off answers,
+     or answers to a different question. Only real answers count toward visibility.</p>
+  
+  <table>
+    <thead><tr><th>Assistant</th><th>Days</th><th class="num">Real answers</th><th class="num">Normal</th><th>Main failure</th></tr></thead>
+    <tbody>
+    
+      <tr><td>Google AI Mode</td><td>16–19 Nov</td>
+          <td class="num">67%</td><td class="num">95%</td>
+          <td>truncated</td></tr>
+    
+      <tr><td>Grok</td><td>2–3 Nov</td>
+          <td class="num">22%</td><td class="num">96%</td>
+          <td>not answer</td></tr>
+    
+    </tbody>
+  </table>
+  <p>These days are excluded from change detection on that assistant. A naive count would have shown visibility collapsing on each of them.
+     A problem that runs to the end of the period is still open: treat that assistant's latest numbers with caution until collection recovers.</p>
+  
+  
+  <p>Limits. Each assistant was asked 20 fixed questions from logged-out sessions in one country. Real users phrase questions differently, are often logged in, and get personalised answers.
+     Visibility measures whether a brand is named, not whether it is recommended favourably. Positions come from list order and are approximate for answers written as prose.</p>
+
+  <h2>Appendix: method</h2>
+  <p><strong>Visibility.</strong> For a brand, an assistant and a day: real answers to questions in the brand's categories that name the brand, divided by real answers to questions in those categories.
+     With no real answers, visibility is empty rather than zero.</p>
+  <p><strong>Change detection.</strong> For each assistant, category and brand, daily counts are treated as binomial. We pick the single change date that best splits the series (at least four days each side),
+     and compare before and after with a two-proportion test. A change is reported if it is at least 10 points, significant after correcting for every series tested,
+     holds on most days after the change, and shows up on at least two separate questions. High confidence needs a much smaller p-value, three or more questions, and no data problem within two days.</p>
+  <p><strong>Data problems.</strong> A day where an assistant's share of real answers falls below 75%, or 12 points under its usual rate, is treated as a collection problem and excluded.</p>
+  <p class="small">Insights batch a941689d-0925-43b7-9dc5-8e57f4d925e0. Every figure in this report is read from the pipeline's daily metric tables.</p>
+</main>
+</body>
+</html>

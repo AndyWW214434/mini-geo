@@ -7,7 +7,8 @@
 | Dashboards app (sign up, ask the chat) | https://geo-web-yqux.onrender.com |
 | Stripe report (hosted) | https://geo-api-91rz.onrender.com/reports/stripe |
 | Are the 15-minute runs keeping up? | https://geo-api-91rz.onrender.com/status |
-| Static copy of the report | [reports/stripe-report.html](reports/stripe-report.html) |
+| Static copy of the report (real data) | [reports/stripe-report.html](reports/stripe-report.html) |
+| 30-day synthetic analysis (method demo) | [reports/stripe-report-synthetic-30d.html](reports/stripe-report-synthetic-30d.html) |
 
 ## Constraints on this build
 
@@ -30,15 +31,20 @@
 
 ## Real answers vs synthetic history
 
-The 30-day history is synthetic; live answers are real. They are never blended: every parsed answer
-carries its source, and `parsed.metric_answers` (active parser version + `config.metrics_sources`) is
-the only definition of the answers that count for metrics, insights, the report and the dashboards.
-The marts stay on the synthetic history until there are enough real days for change detection (at
-least 8). Switching is one statement, which recomputes every day from real answers only:
+The dashboards, chat, insights and report run on **real Bright Data answers only** since 17:45 PST on
+21 Nov. Synthetic and real answers are never blended: every parsed answer carries its source, and
+`parsed.metric_answers` (active parser version + `config.metrics_sources`) is the only definition of
+the answers that count. The switch was one statement, which recomputed every day from real answers:
 
 ```sql
 select ops.set_metrics_sources(array['brightdata']);
 ```
+
+With one day of real data, change detection cannot run yet (it needs at least four days each side of
+a change), so the report says so and its recommendations come from where Stripe is weakest today: the
+competitor closest behind and the sites that assistant cites for those questions. The 30-day synthetic
+analysis, with planted changes found and ranked actions, is kept as a method demonstration in
+[reports/stripe-report-synthetic-30d.html](reports/stripe-report-synthetic-30d.html).
 
 ## What the first real answers showed (and what changed because of them)
 
@@ -135,3 +141,4 @@ re-parsed the whole history and the marts switched over automatically; the insig
 | Bright Data verified live; parser 1.3.0 | 16:25 |
 | Real collection on the schedule | 16:45 |
 | First real answers parsed (180: ChatGPT, Gemini, Google AI Mode) | 17:35 |
+| Dashboards and report switched to real data | 17:45 |
