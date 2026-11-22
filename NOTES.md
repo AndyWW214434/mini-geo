@@ -59,6 +59,18 @@ select ops.set_metrics_sources(array['brightdata']);
   also delays parsing for the whole window, because parsing runs when all platforms finish; parsing per
   platform as soon as its snapshot lands is the next change.
 
+- **A 20-answer snapshot is ~75 MB.** Loading it whole timed out the 512 MB worker, and ingest
+  retried forever. Snapshots are now streamed one record per line and slimmed as they arrive
+  (75 MB → 566 KB stored, 19 s).
+- **Slimming must never touch answer text.** Google AI Mode markdown can exceed 100 KB (inline images);
+  a generic size rule replaced it with a hash and the parser crashed, blocking every batch. Slimming is
+  now limited to page dumps (`*_html`, `response_raw*`), and a record that fails to parse is stored as
+  `error/parse_failed` instead of stopping the batch. 8 AI Mode answers collected before the fix lost
+  their markdown; their plain-text fallback ends in sponsored text, so they stay excluded as cut off.
+- **Gemini ends with a question and answer buttons** ("Want a breakdown of Paddle vs Lemon Squeezy?" /
+  "Yes"). Parser 1.3.1 treats follow-up options after a question as complete: all 11 Gemini
+  "truncated" flags were false positives.
+
 The three real records are labelled fixtures in `backend/tests/fixtures/brightdata/`. Parser 1.3.0
 re-parsed the whole history and the marts switched over automatically; the insights are unchanged
 (same four changes, same two data problems).
@@ -122,3 +134,4 @@ re-parsed the whole history and the marts switched over automatically; the insig
 | Sign-up through WorkOS on the live app | 15:40 |
 | Bright Data verified live; parser 1.3.0 | 16:25 |
 | Real collection on the schedule | 16:45 |
+| First real answers parsed (180: ChatGPT, Gemini, Google AI Mode) | 17:35 |
