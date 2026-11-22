@@ -40,14 +40,15 @@ OMIT_OVER_BYTES = 100_000
 
 
 def slim_record(record: dict[str, Any], limit: int = OMIT_OVER_BYTES) -> dict[str, Any]:
-    """Replace page dumps (raw HTML, raw response streams) with their size and SHA-256.
+    """Replace page dumps (rendered HTML, raw response streams) over `limit` with size and SHA-256.
 
-    Generic on purpose: no field names, any string field over `limit` bytes. The fields answers
-    are parsed from (answer text, markdown, citations) are a few KB and kept verbatim.
+    Only page-dump fields (`*_html`, `response_raw*`) are slimmed. Answer text is never touched,
+    even when large: Google AI Mode markdown can exceed 100 KB with inline images.
     """
     out: dict[str, Any] = {}
     for key, value in record.items():
-        if isinstance(value, str) and len(value) > limit:
+        dump = key.endswith("_html") or key.startswith("response_raw")
+        if dump and isinstance(value, str) and len(value) > limit:
             data = value.encode()
             out[key] = {"_omitted": True, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
         else:

@@ -46,3 +46,15 @@ def test_slim_record_keeps_parsed_fields_and_hashes_dumps():
     assert slim["answer_text_markdown"] == "Stripe."
     assert slim["answer_html"]["_omitted"] is True and slim["answer_html"]["bytes"] == 200_006
     assert len(slim["answer_html"]["sha256"]) == 64
+
+
+def test_large_answer_text_is_never_slimmed_and_bad_records_do_not_raise():
+    rec = {"answer_text_markdown": "Stripe. " + "x" * 200_000, "answer_html": "<html>" + "x" * 200_000}
+    slim = slim_record(rec)
+    assert isinstance(slim["answer_text_markdown"], str) and slim["answer_html"]["_omitted"]
+    weird = {"url": "https://www.google.com/", "input": {"url": "https://www.google.com/", "prompt": "q"},
+             "answer_text_markdown": {"_omitted": True}, "answer_text": "Stripe is a common choice."}
+    assert P.parse("google_ai_mode", weird).status == "ok"
+    assert P.parse("google_ai_mode", {"answer_text": 42}).status == "empty"
+    broken = P.parse("google_ai_mode", {"answer_text": "x", "input": "not-a-dict"})  # raises inside, caught
+    assert broken.status == "error" and broken.status_detail.startswith("parse_failed")

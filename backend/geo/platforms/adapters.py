@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from geo.platforms.base import Extracted, PlatformAdapter, url_list
+from geo.platforms.base import Extracted, PlatformAdapter, first_text, url_list
 
 
 class ChatGPT(PlatformAdapter):
@@ -17,7 +17,7 @@ class ChatGPT(PlatformAdapter):
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
         cites = url_list(r.get("citations"), "url") + url_list(r.get("links_attached"), "url")
-        return Extracted(r.get("answer_text_markdown") or r.get("answer_text"), cites,
+        return Extracted(first_text(r.get("answer_text_markdown"), r.get("answer_text")), cites,
                          self.common_error(r), asked, answered)
 
 
@@ -32,7 +32,7 @@ class Perplexity(PlatformAdapter):
         asked, answered = self.prompts(r)
         cites = (url_list(r.get("sources"), "link", "url") + url_list(r.get("citations"), "url", "link")
                  + url_list(r.get("links_attached"), "url"))
-        return Extracted(r.get("answer_text_markdown") or r.get("answer_text"), cites,
+        return Extracted(first_text(r.get("answer_text_markdown"), r.get("answer_text")), cites,
                          self.common_error(r), asked, answered)
 
 
@@ -46,7 +46,7 @@ class Gemini(PlatformAdapter):
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
         cites = url_list(r.get("links"), "url", "href") + url_list(r.get("citations"), "url")
-        text = r.get("answer_text_markdown") or r.get("response_markdown") or r.get("answer_text")
+        text = first_text(r.get("answer_text_markdown"), r.get("response_markdown"), r.get("answer_text"))
         return Extracted(text, cites,
                          self.common_error(r), asked, answered)
 
@@ -62,7 +62,7 @@ class GoogleAIMode(PlatformAdapter):
         asked, answered = self.prompts(r)
         cites = (url_list(r.get("aio_citations"), "url", "link") + url_list(r.get("citations"), "url")
                  + url_list(r.get("links_attached"), "url"))
-        text = r.get("answer_text_markdown") or r.get("aio_text") or r.get("answer_text")
+        text = first_text(r.get("answer_text_markdown"), r.get("aio_text"), r.get("answer_text"))
         return Extracted(text, cites, self.common_error(r),
                          asked, answered, r.get("is_truncated"))
 
@@ -77,7 +77,7 @@ class Copilot(PlatformAdapter):
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
         cites = url_list(r.get("sources"), "url", "link")
-        return Extracted(r.get("answer_text"), cites, self.common_error(r), asked, answered)
+        return Extracted(first_text(r.get("answer_text")), cites, self.common_error(r), asked, answered)
 
 
 class Grok(PlatformAdapter):
@@ -90,6 +90,6 @@ class Grok(PlatformAdapter):
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
         resp = r.get("response") if isinstance(r.get("response"), dict) else {}
-        text = resp.get("text") if resp else r.get("answer_text")
+        text = first_text(resp.get("text") if resp else None, r.get("answer_text"))
         cites = url_list(resp.get("web_results"), "url") + url_list(resp.get("x_posts"), "url")
         return Extracted(text, cites, self.common_error(r), asked, answered)

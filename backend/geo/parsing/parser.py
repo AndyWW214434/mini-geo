@@ -43,6 +43,12 @@ class Parser:
         self.matcher = MentionMatcher(brands)
 
     def parse(self, platform_id: str, record: dict[str, Any]) -> ParsedAnswer:
+        try:
+            return self._parse(platform_id, record)
+        except Exception as exc:  # one malformed record must not stop the batch; it stays re-parseable
+            return ParsedAnswer(st.ERROR, f"parse_failed: {type(exc).__name__}: {exc}"[:200], 0)
+
+    def _parse(self, platform_id: str, record: dict[str, Any]) -> ParsedAnswer:
         ex = adapter(platform_id).extract(record)
         status, detail = st.classify(ex)
         text = ex.text or ""

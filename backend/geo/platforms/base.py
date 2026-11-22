@@ -75,6 +75,11 @@ def adapter_for_record(record: dict[str, Any]) -> PlatformAdapter | None:
     return next((a for a in REGISTRY.values() if a.matches(record)), None)
 
 
+def first_text(*values: Any) -> str | None:
+    """The first candidate that is a non-empty string (scrapers sometimes return other types)."""
+    return next((v for v in values if isinstance(v, str) and v.strip()), None)
+
+
 def url_list(items: Any, *keys: str) -> list[str]:
     """Pull URLs out of a list of strings or dicts, trying each key in order."""
     out: list[str] = []
