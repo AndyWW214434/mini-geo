@@ -7,6 +7,9 @@ daily visibility in SQL, finds the changes that matter, and writes a report for 
 dashboards app (Next.js + FastAPI + WorkOS) lets users build charts by asking an AI chat that
 reaches the data only through an MCP server.
 
+**Live:** app https://geo-web-yqux.onrender.com · report https://geo-api-91rz.onrender.com/reports/stripe ·
+run status https://geo-api-91rz.onrender.com/status
+
 - Design, failure modes, scale and cost: [ARCHITECTURE.md](ARCHITECTURE.md)
 - Insights method: [docs/METHOD.md](docs/METHOD.md)
 - Decisions, cuts and data notes: [NOTES.md](NOTES.md)
