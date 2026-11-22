@@ -8,6 +8,7 @@ All activities are idempotent so Temporal can retry them freely:
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 from dataclasses import dataclass
@@ -132,10 +133,14 @@ def ingest_snapshot(ref: SnapshotRef) -> dict[str, int]:
     records = json.loads(body)
     if isinstance(records, dict):  # some endpoints wrap results
         records = records.get("data") or records.get("results") or [records]
+    records = [pipeline.slim_record(r) for r in records if isinstance(r, dict)]
     window = datetime.fromisoformat(ref.window_start)
+    raw_bytes = body.encode()
     with connection() as conn:
-        conn.execute("insert into raw.snapshots (snapshot_id, run_id, body) values (%s, %s, %s) "
-                     "on conflict do nothing", (ref.snapshot_id, ref.run_id, body))
+        conn.execute("""insert into raw.snapshots (snapshot_id, run_id, body, original_bytes, original_sha256)
+                        values (%s, %s, %s, %s, %s) on conflict do nothing""",
+                     (ref.snapshot_id, ref.run_id, json.dumps(records), len(raw_bytes),
+                      hashlib.sha256(raw_bytes).hexdigest()))
         by_text = {_norm(r["text"]): r["prompt_id"] for r in conn.execute("select prompt_id, text from config.prompts")}
         rows, unmatched = [], 0
         for rec in records:

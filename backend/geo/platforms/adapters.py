@@ -30,7 +30,8 @@ class Perplexity(PlatformAdapter):
 
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
-        cites = url_list(r.get("sources"), "link", "url") + url_list(r.get("citations"), "url", "link")
+        cites = (url_list(r.get("sources"), "link", "url") + url_list(r.get("citations"), "url", "link")
+                 + url_list(r.get("links_attached"), "url"))
         return Extracted(r.get("answer_text_markdown") or r.get("answer_text"), cites,
                          self.common_error(r), asked, answered)
 
@@ -45,7 +46,8 @@ class Gemini(PlatformAdapter):
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
         cites = url_list(r.get("links"), "url", "href") + url_list(r.get("citations"), "url")
-        return Extracted(r.get("response_markdown") or r.get("answer_text"), cites,
+        text = r.get("answer_text_markdown") or r.get("response_markdown") or r.get("answer_text")
+        return Extracted(text, cites,
                          self.common_error(r), asked, answered)
 
 
@@ -58,8 +60,10 @@ class GoogleAIMode(PlatformAdapter):
 
     def extract(self, r: dict[str, Any]) -> Extracted:
         asked, answered = self.prompts(r)
-        cites = url_list(r.get("aio_citations"), "url", "link")
-        return Extracted(r.get("aio_text") or r.get("answer_text"), cites, self.common_error(r),
+        cites = (url_list(r.get("aio_citations"), "url", "link") + url_list(r.get("citations"), "url")
+                 + url_list(r.get("links_attached"), "url"))
+        text = r.get("answer_text_markdown") or r.get("aio_text") or r.get("answer_text")
+        return Extracted(text, cites, self.common_error(r),
                          asked, answered, r.get("is_truncated"))
 
 

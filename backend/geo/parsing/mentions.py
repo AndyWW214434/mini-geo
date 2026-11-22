@@ -20,7 +20,9 @@ from dataclasses import dataclass
 from geo.catalog import Brand
 
 URL_RE = re.compile(r"\]\([^)]*\)|https?://\S+|www\.\S+")
-ITEM_RE = re.compile(r"^[ \t]*(?:(?:\d+[.)]|[-*•+])[ \t]+|#{1,6}[ \t]+|\|)", re.MULTILINE)
+# Markdown from scrapers escapes list numbers ("1\\. Stripe"), so the dot may be escaped.
+ITEM_RE = re.compile(r"^[ \t]*(?:(?P<num>\d+\\?[.)])[ \t]+|(?P<head>#{1,6})[ \t]+|(?P<table>\|)|(?P<bullet>[-*•+])[ \t]+)",
+                     re.MULTILINE)
 TABLE_SEPARATOR = re.compile(r"^\s*\|?\s*:?-{2,}")
 HEAD_END = re.compile(r"\*\*(?=\s*[:\-–—])|\*\*\s*$|:|\s[-–—]\s|\|")
 
@@ -70,9 +72,15 @@ class MentionMatcher:
 
     @staticmethod
     def _heads(text: str) -> list[tuple[int, int]]:
-        """Spans of list-item / heading / table-row heads, in document order."""
-        spans = []
+        """Heads of the answer's top-level ranking structure, in document order.
+
+        Numbered items and headings rank; failing those, table rows; failing those, bullets.
+        Bullets under a numbered item are details ("Useful where PayPal adoption matters"),
+        not a ranking, so they never outrank the numbered list.
+        """
+        spans: dict[str, list[tuple[int, int]]] = {"primary": [], "table": [], "bullet": []}
         for m in ITEM_RE.finditer(text):
+            kind = "primary" if (m.group("num") or m.group("head")) else "table" if m.group("table") else "bullet"
             line_end = text.find("\n", m.end())
             line_end = len(text) if line_end == -1 else line_end
             line = text[m.end():line_end]
@@ -80,8 +88,8 @@ class MentionMatcher:
                 continue
             end = HEAD_END.search(line, 2)
             head_len = end.start() if end else min(len(line), 80)
-            spans.append((m.end(), m.end() + head_len))
-        return spans
+            spans[kind].append((m.end(), m.end() + head_len))
+        return spans["primary"] or spans["table"] or spans["bullet"]
 
     def find(self, text: str) -> list[Mention]:
         clean = self._blank_urls(text or "")

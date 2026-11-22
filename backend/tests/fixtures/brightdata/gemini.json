@@ -1,0 +1,73 @@
+{
+ "url": "https://gemini.google.com/app/4b89acc05a5e3c08",
+ "prompt": "What is the best payments API for a marketplace?",
+ "answer_html": {
+  "_omitted": true,
+  "bytes": 2265584,
+  "sha256": "1e8d55921fe318ded78bdc25135fb7408191086005456a4caeda869646a2d941"
+ },
+ "answer_text": "The best payments API for a marketplace depends heavily on your geographic footprint, technical resources, and regulatory appetite. For the vast majority of modern marketplaces, Stripe Connect is the industry standard, though several strong alternatives exist for specific business models. Top Marketplace Payment APIs Provider Best For Key Strength Trade-offs Stripe Connect Most startups & global SaaS/marketplaces Best-in-class developer docs, flexible onboarding, global reach (45+ countries), instant payouts. Fees can add up at scale; strict underwriting on certain high-risk verticals. Adyen for Platforms Enterprise & high-volume global marketplaces Unified commerce (online + in-person POS), interchange-plus pricing, deep global acquiring. High volume minimums; steeper technical integration curve. PayPal Complete Payments (for Marketplaces) Consumer-facing retail & peer-to-peer High buyer trust and conversion rates; built-in PayPal/Venmo wallets. Rigid compliance/onboarding flows; less modern API ergonomics than Stripe. Mangopay European marketplaces & crowdfunding Modular e-wallet infrastructure, strong EU/UK regulatory compliance, escrow-style holding. Primarily focused on Europe/UK; fewer global payout rails than Stripe/Adyen. Braintree Marketplace Existing PayPal/Braintree merchants Good support for PayPal, Venmo, Apple Pay, and cards in one SDK. Platform features are less actively expanded compared to Stripe Connect. How to Choose the Right Fit Default Choice (Stripe Connect): If you want to launch quickly and scale globally without building compliance infrastructure from scratch, start here. It offers three account types ( Standard , Express , and Custom ) that let you trade off between speed-to-market and full white-label control over the seller onboarding and payout experience. High-Volume / Enterprise (Adyen): Once you are processing tens of millions in Gross Merchandise Value (GMV) annually, Adyen\u2019s interchange-plus pricing model and direct acquiring licenses often yield significant margin savings over Stripe's blended rates. Complex Fund Flows & Escrow (Mangopay or Finix): If your business model requires holding funds in segregated user wallets for extended periods before triggering multi-party payouts (common in European P2P or B2B platforms), Mangopay's wallet-centric architecture is built specifically for that compliance model. Local / Emerging Markets: If your buyers and sellers are concentrated in regions where US/EU providers lack local acquiring (e. g., the Caribbean, Latin America, Africa, or Southeast Asia), global platforms often struggle with cross-border fees and payout rails. In those cases, regional aggregators (like dLocal , Paystack , or local bank-backed gateways) are necessary to support local payment methods and domestic bank settlements. Key Architectural Questions to Ask Before Integrating Merchant of Record (MoR) vs. Payment Facilitator: Do you want the provider to handle seller KYC (Know Your Customer), 1099/tax reporting, and chargeback liability, or do you want to own that risk for lower processing fees? Split Payments: Do you need to split a single buyer checkout across multiple sellers simultaneously (e. g., an Instacart or Amazon cart), or is every transaction 1-to-1 (e. g., Airbnb or Uber)? Payout Timing: Do your sellers expect instant payouts to debit cards, or are standard 2-to-7-day ACH/SEPA bank transfers acceptable? To narrow down the exact architecture for your platform: Compare Stripe Connect Express vs. Custom accounts Design a multi-seller split payment flow Recommend APIs for specific regions or currencies",
+ "links_attached": [],
+ "citations": [
+  {
+   "url": "https://www.photonpay.com/hk/blog/article/marketplace-payment-solutions",
+   "title": "Best Marketplace Payment Solutions in 2026: Providers Compared",
+   "description": null,
+   "icon": "https://t0.gstatic.com/faviconV2?url=https://www.photonpay.com/&client=BARD&type=FAVICON&size=256&fallback_opts=TYPE,SIZE,URL",
+   "domain": "www.photonpay.com",
+   "cited": false,
+   "position": null
+  },
+  {
+   "url": "https://blog.postman.com/best-payment-apis-for-developers/",
+   "title": "Best Payment APIs for Developers in 2026 - Postman Blog",
+   "description": null,
+   "icon": "https://t2.gstatic.com/faviconV2?url=https://blog.postman.com/&client=BARD&type=FAVICON&size=256&fallback_opts=TYPE,SIZE,URL",
+   "domain": "blog.postman.com",
+   "cited": false,
+   "position": null
+  },
+  {
+   "url": "https://hackceleration.com/labs/best/marketplace-payment-gateway",
+   "title": "Best Marketplace Payment Gateway 2026: 5 Options Compared",
+   "description": null,
+   "icon": "https://t1.gstatic.com/faviconV2?url=https://hackceleration.com/&client=BARD&type=FAVICON&size=256&fallback_opts=TYPE,SIZE,URL",
+   "domain": "hackceleration.com",
+   "cited": false,
+   "position": null
+  },
+  {
+   "url": "https://connectpay.com/blog/best-ecommerce-payment-processing/",
+   "title": "9 Best Ecommerce Payment Processing Companies in 2026",
+   "description": null,
+   "icon": "https://t2.gstatic.com/faviconV2?url=https://connectpay.com/&client=BARD&type=FAVICON&size=256&fallback_opts=TYPE,SIZE,URL",
+   "domain": "connectpay.com",
+   "cited": false,
+   "position": null
+  },
+  {
+   "url": "https://usedots.com/blog/best-instant-payout-apis-marketplace-sellers/",
+   "title": "Best Instant Payout APIs for Marketplace Sellers October 2026 - Dots",
+   "description": null,
+   "icon": "https://t2.gstatic.com/faviconV2?url=https://usedots.com/&client=BARD&type=FAVICON&size=256&fallback_opts=TYPE,SIZE,URL",
+   "domain": "usedots.com",
+   "cited": false,
+   "position": null
+  }
+ ],
+ "country": null,
+ "index": null,
+ "answer_text_markdown": "The best payments API for a marketplace depends heavily on your geographic footprint, technical resources, and regulatory appetite. For the vast majority of modern marketplaces, **Stripe Connect** is the industry standard, though several strong alternatives exist for specific business models.\n\n### Top Marketplace Payment APIs\n\n| Provider | Best For | Key Strength | Trade-offs |\n| --- | --- | --- | --- |\n| **Stripe Connect** | Most startups & global SaaS/marketplaces | Best-in-class developer docs, flexible onboarding, global reach (45+ countries), instant payouts. | Fees can add up at scale; strict underwriting on certain high-risk verticals. |\n| **Adyen for Platforms** | Enterprise & high-volume global marketplaces | Unified commerce (online + in-person POS), interchange-plus pricing, deep global acquiring. | High volume minimums; steeper technical integration curve. |\n| **PayPal Complete Payments (for Marketplaces)** | Consumer-facing retail & peer-to-peer | High buyer trust and conversion rates; built-in PayPal/Venmo wallets. | Rigid compliance/onboarding flows; less modern API ergonomics than Stripe. |\n| **Mangopay** | European marketplaces & crowdfunding | Modular e-wallet infrastructure, strong EU/UK regulatory compliance, escrow-style holding. | Primarily focused on Europe/UK; fewer global payout rails than Stripe/Adyen. |\n| **Braintree Marketplace** | Existing PayPal/Braintree merchants | Good support for PayPal, Venmo, Apple Pay, and cards in one SDK. | Platform features are less actively expanded compared to Stripe Connect. |\n\n### How to Choose the Right Fit\n\n*   **Default Choice (Stripe Connect):** If you want to launch quickly and scale globally without building compliance infrastructure from scratch, start here. It offers three account types ( **Standard** , **Express** , and **Custom** ) that let you trade off between speed-to-market and full white-label control over the seller onboarding and payout experience.\n    \n*   **High-Volume / Enterprise (Adyen):** Once you are processing tens of millions in Gross Merchandise Value (GMV) annually, Adyen\u2019s interchange-plus pricing model and direct acquiring licenses often yield significant margin savings over Stripe's blended rates.\n    \n*   **Complex Fund Flows & Escrow (Mangopay or Finix):** If your business model requires holding funds in segregated user wallets for extended periods before triggering multi-party payouts (common in European P2P or B2B platforms), Mangopay's wallet-centric architecture is built specifically for that compliance model.\n    \n*   **Local / Emerging Markets:** If your buyers and sellers are concentrated in regions where US/EU providers lack local acquiring (e. g., the Caribbean, Latin America, Africa, or Southeast Asia), global platforms often struggle with cross-border fees and payout rails. In those cases, regional aggregators (like **dLocal** , **Paystack** , or local bank-backed gateways) are necessary to support local payment methods and domestic bank settlements.\n    \n\n### Key Architectural Questions to Ask Before Integrating\n\n1.  **Merchant of Record (MoR) vs. Payment Facilitator:** Do you want the provider to handle seller KYC (Know Your Customer), 1099/tax reporting, and chargeback liability, or do you want to own that risk for lower processing fees?\n    \n2.  **Split Payments:** Do you need to split a single buyer checkout across multiple sellers simultaneously (e. g., an Instacart or Amazon cart), or is every transaction 1-to-1 (e. g., Airbnb or Uber)?\n    \n3.  **Payout Timing:** Do your sellers expect instant payouts to debit cards, or are standard 2-to-7-day ACH/SEPA bank transfers acceptable?\n    \n\nTo narrow down the exact architecture for your platform:\n\nCompare Stripe Connect Express vs. Custom accounts\n\nDesign a multi-seller split payment flow\n\nRecommend APIs for specific regions or currencies",
+ "response_raw": {
+  "_omitted": true,
+  "bytes": 1284951,
+  "sha256": "129cc311f2457838efca51b5d0f460fdcb1e86c03c2d507f47320cf9d305a505"
+ },
+ "model": "Auto",
+ "answer_text_raw": "The best payments API for a marketplace depends heavily on your geographic footprint,\n technical resources,\n and regulatory appetite.\n For the vast majority of modern marketplaces,\n \nStripe Connect\n is the industry standard,\n though several strong alternatives exist for specific business models.\n\nTop Marketplace Payment APIs\n\nProvider\n\nBest For\n\nKey Strength\n\nTrade-offs\n\nStripe Connect\n\nMost startups & global SaaS/marketplaces\n\nBest-in-class developer docs, flexible onboarding, global reach (45+ countries), instant payouts.\n\nFees can add up at scale; strict underwriting on certain high-risk verticals.\n\nAdyen for Platforms\n\nEnterprise & high-volume global marketplaces\n\nUnified commerce (online + in-person POS), interchange-plus pricing, deep global acquiring.\n\nHigh volume minimums; steeper technical integration curve.\n\nPayPal Complete Payments (for Marketplaces)\n\nConsumer-facing retail & peer-to-peer\n\nHigh buyer trust and conversion rates; built-in PayPal/Venmo wallets.\n\nRigid compliance/onboarding flows; less modern API ergonomics than Stripe.\n\nMangopay\n\nEuropean marketplaces & crowdfunding\n\nModular e-wallet infrastructure, strong EU/UK regulatory compliance, escrow-style holding.\n\nPrimarily focused on Europe/UK; fewer global payout rails than Stripe/Adyen.\n\nBraintree Marketplace\n\nExisting PayPal/Braintree merchants\n\nGood support for PayPal, Venmo, Apple Pay, and cards in one SDK.\n\nPlatform features are less actively expanded compared to Stripe Connect.\n\nHow to Choose the Right Fit\n\nDefault Choice (Stripe Connect):\n If you want to launch quickly and scale globally without building compliance infrastructure from scratch,\n start here.\n It offers three account types (\nStandard\n,\n \nExpress\n,\n and \nCustom\n) that let you trade off between speed-to-market and full white-label control over the seller onboarding and payout experience.\n\nHigh-Volume / Enterprise (Adyen):\n Once you are processing tens of millions in Gross Merchandise Value (GMV) annually,\n Adyen\u2019s interchange-plus pricing model and direct acquiring licenses often yield significant margin savings over Stripe's blended rates.\n\nComplex Fund Flows & Escrow (Mangopay or Finix):\n If your business model requires holding funds in segregated user wallets for extended periods before triggering multi-party payouts (common in European P2P or B2B platforms),\n Mangopay's wallet-centric architecture is built specifically for that compliance model.\n\nLocal / Emerging Markets:\n If your buyers and sellers are concentrated in regions where US/EU providers lack local acquiring (e.\ng.,\n the Caribbean,\n Latin America,\n Africa,\n or Southeast Asia),\n global platforms often struggle with cross-border fees and payout rails.\n In those cases,\n regional aggregators (like \ndLocal\n,\n \nPaystack\n,\n or local bank-backed gateways) are necessary to support local payment methods and domestic bank settlements.\n\nKey Architectural Questions to Ask Before Integrating\n\nMerchant of Record (MoR) vs. Payment Facilitator:\n Do you want the provider to handle seller KYC (Know Your Customer),\n 1099/tax reporting,\n and chargeback liability,\n or do you want to own that risk for lower processing fees?\n\nSplit Payments:\n Do you need to split a single buyer checkout across multiple sellers simultaneously (e.\ng.,\n an Instacart or Amazon cart),\n or is every transaction 1-to-1 (e.\ng.,\n Airbnb or Uber)?\n\nPayout Timing:\n Do your sellers expect instant payouts to debit cards,\n or are standard 2-to-7-day ACH/SEPA bank transfers acceptable?\n\nTo narrow down the exact architecture for your platform:\n\nCompare Stripe Connect Express vs. Custom accounts\n\nDesign a multi-seller split payment flow\n\nRecommend APIs for specific regions or currencies",
+ "timestamp": "2026-11-22T00:05:04.364Z",
+ "input": {
+  "url": "https://gemini.google.com/",
+  "prompt": "What is the best payments API for a marketplace?"
+ }
+}

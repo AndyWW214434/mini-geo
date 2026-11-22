@@ -1,0 +1,384 @@
+{
+ "url": "https://chatgpt.com/?q=What%20is%20the%20best%20payments%20API%20for%20a%20marketplace?",
+ "prompt": "What is the best payments API for a marketplace?",
+ "answer_html": {
+  "_omitted": true,
+  "bytes": 1487355,
+  "sha256": "8bd4e91399ba100a50adeefd786ec800fcdffdea538e10d44bf7e56e30028678"
+ },
+ "answer_text": "For most marketplaces, Stripe Connect is the best payments API overall. It is purpose-built for marketplace payment flows, rather than simply processing credit cards. It handles seller onboarding, identity verification, split payments, platform commissions, refunds, and seller payouts. However, the best choice depends on your marketplace's business model, geography, and transaction volume. Top 5 marketplace payment APIs 1. Stripe Connect Best overall Excellent developer experience and documentation. Built-in seller onboarding and KYC. Split payments and application fees. Automated seller payouts. Strong ecosystem of integrations. Website: Stripe Connect [1] 2. Adyen for Platforms Best for enterprise Excellent international payment infrastructure. Flexible split payments. Sophisticated risk management. Strong global acquiring capabilities. Better suited to established, high-volume platforms. Website: Adyen for Platforms [2] 3. Mangopay Best for wallets and escrow Designed specifically for marketplaces. Seller wallets and fund allocation. Multi-party payment flows. Particularly interesting for European marketplaces. Website: Mangopay [3] 4. PayPal Commerce Platform Recognizable checkout experience. Marketplace payment capabilities. Global buyer reach. Useful for marketplaces where PayPal adoption matters. Website: PayPal Commerce Platform [4] 5. Airwallex Multi-currency payment infrastructure. International seller payouts. Foreign exchange capabilities. Interesting for cross-border marketplaces. Website: Airwallex [5] These comparisons reflect current 2026 marketplace offerings. [6, 7, 8, 9] Comparison Feature Stripe Connect Adyen Mangopay Seller onboarding Yes Yes Yes Split payments Yes Yes Yes Platform commissions Yes Yes Yes Seller payouts Yes Yes Yes Wallet infrastructure Limited Balance accounts Core feature Startup friendly Excellent Moderate Moderate Enterprise scalability Excellent Excellent Excellent What I'd recommend If I were building a new marketplace today: Startup / MVP: Stripe Connect. Multi-vendor marketplace: Stripe Connect. Escrow-heavy marketplace: Mangopay. Large international marketplace: Adyen. Cross-border marketplace: Airwallex. One important consideration: don't build your own escrow or money-holding infrastructure without understanding the applicable financial regulations. Let an appropriately licensed payments provider handle the regulated money movement. Let me narrow this down to the best API for your marketplace There are four things that would change my recommendation. 1. What kind of marketplace are you building? Multi-vendor marketplace Service marketplace (Uber / Airbnb style) B2B marketplace Digital products marketplace Freelancer marketplace Rental marketplace Other 2. Where will you operate? United States United States + Canada United States + Europe Worldwide / Global Europe Other 3. Expected transaction volume? Pre-launch / MVP Under $100K per month $100K\u2013$1M per month $1M\u2013$10M per month Over $10M per month 4. How should money flow? Buyer pays platform \u2192 platform takes commission \u2192 seller gets paid Buyer pays multiple sellers in one transaction Platform holds funds until service/product is delivered Seller receives payment directly and platform collects a fee Not decided yet Find my best payments API With those answers, I can recommend the actual payment infrastructure, including the API, onboarding model, commission handling, split-payment architecture, and payout system. View sources",
+ "links_attached": [
+  {
+   "url": "https://stripe.com/connect?utm_source=chatgpt.com",
+   "text": "Stripe Connect",
+   "position": 1
+  },
+  {
+   "url": "https://www.adyen.com/platforms?utm_source=chatgpt.com",
+   "text": "Adyen for Platforms",
+   "position": 2
+  },
+  {
+   "url": "https://mangopay.com/?utm_source=chatgpt.com",
+   "text": "Mangopay",
+   "position": 3
+  },
+  {
+   "url": "https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com",
+   "text": "PayPal Commerce Platform",
+   "position": 4
+  },
+  {
+   "url": "https://www.airwallex.com/?utm_source=chatgpt.com",
+   "text": "Airwallex",
+   "position": 5
+  }
+ ],
+ "citations": [
+  {
+   "url": "https://stripe.com/connect?utm_source=chatgpt.com",
+   "title": "Stripe Connect",
+   "description": null,
+   "icon": null,
+   "domain": "https://stripe.com",
+   "cited": true,
+   "position": 1,
+   "answer_position": 1
+  },
+  {
+   "url": "https://www.adyen.com/platforms?utm_source=chatgpt.com",
+   "title": "Adyen for Platforms",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.adyen.com",
+   "cited": true,
+   "position": 2,
+   "answer_position": 2
+  },
+  {
+   "url": "https://mangopay.com/?utm_source=chatgpt.com",
+   "title": "Mangopay",
+   "description": null,
+   "icon": null,
+   "domain": "https://mangopay.com",
+   "cited": true,
+   "position": 3,
+   "answer_position": 3
+  },
+  {
+   "url": "https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com",
+   "title": "PayPal Commerce Platform",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.paypal.com",
+   "cited": true,
+   "position": 4,
+   "answer_position": 4
+  },
+  {
+   "url": "https://www.airwallex.com/?utm_source=chatgpt.com",
+   "title": "Airwallex",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.airwallex.com",
+   "cited": true,
+   "position": 5,
+   "answer_position": 5
+  },
+  {
+   "url": "https://dupple.com/learn/best-marketplace-transactability-platforms-2026?utm_source=chatgpt.com",
+   "title": "Best Marketplace Transactability Platforms in 2026",
+   "description": null,
+   "icon": null,
+   "domain": "https://dupple.com",
+   "cited": true,
+   "position": 6,
+   "answer_position": 6
+  },
+  {
+   "url": "https://www.itechguides.com/best/marketplace-payment-platforms/?utm_source=chatgpt.com",
+   "title": "Best Marketplace Payment Platforms in 2026",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.itechguides.com",
+   "cited": true,
+   "position": 7,
+   "answer_position": 7
+  },
+  {
+   "url": "https://www.photonpay.com/hk/blog/article/marketplace-payment-solutions?utm_source=chatgpt.com",
+   "title": "Marketplace Payment Solutions Compared (2026): Providers & Selection",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.photonpay.com",
+   "cited": true,
+   "position": 8,
+   "answer_position": 8
+  },
+  {
+   "url": "https://www.lowcode.agency/blog/payment-gateway-integration-in-marketplace-apps?utm_source=chatgpt.com",
+   "title": "Payment Gateway Integration for Marketplaces",
+   "description": null,
+   "icon": null,
+   "domain": "https://www.lowcode.agency",
+   "cited": true,
+   "position": 9,
+   "answer_position": 9
+  }
+ ],
+ "country": null,
+ "is_map": false,
+ "references": null,
+ "shopping": [
+  {
+   "title": "Stripe Connect",
+   "image": "https://images.openai.com/static-rsc-4/EapD5EX_Q6Ukn94-Le7ewNJYWvCvzJEom9sh2DsMsvbCwrGSdLAOqRjXk1kyB6UktSe9tNvOoxYWJ37HkR6mfTw_VAIgBoCMUk2kPULDXhrfl18-RVs2ezUqTBRQVziKubxYlkq8uBg1j-yyTmvxDCFwHq7gvZ_ES-QQ_WNHmdTmC74Zht98epwhZPfuczid?purpose=fullsize",
+   "description": "Excellent developer experience and documentation.",
+   "link": "https://stripe.com/connect?utm_source=chatgpt.com",
+   "tag": null,
+   "all_images": [
+    "https://images.openai.com/static-rsc-4/EapD5EX_Q6Ukn94-Le7ewNJYWvCvzJEom9sh2DsMsvbCwrGSdLAOqRjXk1kyB6UktSe9tNvOoxYWJ37HkR6mfTw_VAIgBoCMUk2kPULDXhrfl18-RVs2ezUqTBRQVziKubxYlkq8uBg1j-yyTmvxDCFwHq7gvZ_ES-QQ_WNHmdTmC74Zht98epwhZPfuczid?purpose=fullsize"
+   ],
+   "rating": null,
+   "purchasing_options": [
+    {
+     "price_string": null,
+     "website": "stripe.com",
+     "buy_link": "https://stripe.com/connect?utm_source=chatgpt.com",
+     "merchants": "stripe.com"
+    }
+   ],
+   "reviews": 0,
+   "price": null,
+   "merchants": "stripe.com"
+  },
+  {
+   "title": "Adyen for Platforms",
+   "image": "https://images.openai.com/static-rsc-4/jmMcxZKtbVKfcWTebbQKqzmBkRfp6E2WP-tmzNsr-WvfP3SCV5hwOirfDSPq8KOANJgNO43p6P9qwQIiSkO84Fwo30B7gr7H47im91NC3ZxcxfCjVWgYDDsVhAiLwfM3AvbZ-VO5scMjFeydAh5WX1jKbdxi2g7tDLXQeHbeUpq1v_aUoF-FNeoePqXpPEam?purpose=fullsize",
+   "description": "Excellent international payment infrastructure.",
+   "link": "https://www.adyen.com/platforms?utm_source=chatgpt.com",
+   "tag": null,
+   "all_images": [
+    "https://images.openai.com/static-rsc-4/jmMcxZKtbVKfcWTebbQKqzmBkRfp6E2WP-tmzNsr-WvfP3SCV5hwOirfDSPq8KOANJgNO43p6P9qwQIiSkO84Fwo30B7gr7H47im91NC3ZxcxfCjVWgYDDsVhAiLwfM3AvbZ-VO5scMjFeydAh5WX1jKbdxi2g7tDLXQeHbeUpq1v_aUoF-FNeoePqXpPEam?purpose=fullsize"
+   ],
+   "rating": null,
+   "purchasing_options": [
+    {
+     "price_string": null,
+     "website": "adyen.com",
+     "buy_link": "https://www.adyen.com/platforms?utm_source=chatgpt.com",
+     "merchants": "adyen.com"
+    }
+   ],
+   "reviews": 0,
+   "price": null,
+   "merchants": "adyen.com"
+  },
+  {
+   "title": "Mangopay",
+   "image": "https://images.openai.com/static-rsc-4/KWjieb4PHozjHb3LOOxzeARO9TMazwWUQ_t7klq3bPjkkgYxnFvQUriTEEOpzmliwLhyZ0xw8neZsFN7neY9Ey0gF1cFds-JMlIPNUrRRp7x2w8gKNKvzuqgtoX2VCyY7_ky555zmtV3eQCjO6WW2OecdAv3na63lgcTVKefgJcHWGguenQ1lPSLgXOjUT_a?purpose=fullsize",
+   "description": "Designed specifically for marketplaces.",
+   "link": "https://mangopay.com/?utm_source=chatgpt.com",
+   "tag": null,
+   "all_images": [
+    "https://images.openai.com/static-rsc-4/KWjieb4PHozjHb3LOOxzeARO9TMazwWUQ_t7klq3bPjkkgYxnFvQUriTEEOpzmliwLhyZ0xw8neZsFN7neY9Ey0gF1cFds-JMlIPNUrRRp7x2w8gKNKvzuqgtoX2VCyY7_ky555zmtV3eQCjO6WW2OecdAv3na63lgcTVKefgJcHWGguenQ1lPSLgXOjUT_a?purpose=fullsize"
+   ],
+   "rating": null,
+   "purchasing_options": [
+    {
+     "price_string": null,
+     "website": "mangopay.com",
+     "buy_link": null,
+     "merchants": "mangopay.com"
+    }
+   ],
+   "reviews": 0,
+   "price": null,
+   "merchants": "mangopay.com"
+  },
+  {
+   "title": "PayPal Commerce Platform",
+   "image": "https://images.openai.com/static-rsc-4/MAzkiJ1YuDnyj2FyYAyszlEHA_k7S0XqFuDRhbVDc0cICTj1-X82VJgt7N8vcRcKsONlo3HvF0Pe2MUizAJnEXGjXwhkQKSdT9w8dASkeKU2hONBc_K0UGh46cKL9ey1QEsmTJtnMOjwtp9k8flMfotUdye-2o09Vcb_X37Fr_RqbfMx2vNQ-Z2QRLli3zQI?purpose=fullsize",
+   "description": "Recognizable checkout experience.",
+   "link": "https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com",
+   "tag": null,
+   "all_images": [
+    "https://images.openai.com/static-rsc-4/MAzkiJ1YuDnyj2FyYAyszlEHA_k7S0XqFuDRhbVDc0cICTj1-X82VJgt7N8vcRcKsONlo3HvF0Pe2MUizAJnEXGjXwhkQKSdT9w8dASkeKU2hONBc_K0UGh46cKL9ey1QEsmTJtnMOjwtp9k8flMfotUdye-2o09Vcb_X37Fr_RqbfMx2vNQ-Z2QRLli3zQI?purpose=fullsize"
+   ],
+   "rating": null,
+   "purchasing_options": [
+    {
+     "price_string": null,
+     "website": "paypal.com",
+     "buy_link": "https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com",
+     "merchants": "paypal.com"
+    }
+   ],
+   "reviews": 0,
+   "price": null,
+   "merchants": "paypal.com"
+  },
+  {
+   "title": "Airwallex",
+   "image": "https://images.openai.com/static-rsc-4/Cpyruqb32VGeSvBqt2J-uJIPgJAuQODhHbPQHYmviUOvz9VVZULAwANIb75Wz6LBUwVZPx2cQS8DFZkvWgR34VujebWk4DhJtm2_jq8V9ZqTjLePY4YyEE4yGbY2hyiTKbqhixmn3S1jldY1kZcQL0aUANvUBv0jTY04Ipoop9L7UPzmem15ql67sXwe9NwY?purpose=fullsize",
+   "description": "Multi-currency payment infrastructure.",
+   "link": "https://www.airwallex.com/?utm_source=chatgpt.com",
+   "tag": null,
+   "all_images": [
+    "https://images.openai.com/static-rsc-4/Cpyruqb32VGeSvBqt2J-uJIPgJAuQODhHbPQHYmviUOvz9VVZULAwANIb75Wz6LBUwVZPx2cQS8DFZkvWgR34VujebWk4DhJtm2_jq8V9ZqTjLePY4YyEE4yGbY2hyiTKbqhixmn3S1jldY1kZcQL0aUANvUBv0jTY04Ipoop9L7UPzmem15ql67sXwe9NwY?purpose=fullsize"
+   ],
+   "rating": null,
+   "purchasing_options": [
+    {
+     "price_string": null,
+     "website": "airwallex.com",
+     "buy_link": null,
+     "merchants": "airwallex.com"
+    }
+   ],
+   "reviews": 0,
+   "price": null,
+   "merchants": "airwallex.com"
+  }
+ ],
+ "shopping_visible": true,
+ "index": null,
+ "answer_text_markdown": "For most marketplaces, Stripe Connect is the best payments API overall.\n\nIt is purpose-built for marketplace payment flows, rather than simply processing credit cards. It handles seller onboarding, identity verification, split payments, platform commissions, refunds, and seller payouts.\n\nHowever, the best choice depends on your marketplace's business model, geography, and transaction volume.\n\nTop 5 marketplace payment APIs\n------------------------------\n\n1\\. Stripe Connect\n\nBest overall\n\n*   Excellent developer experience and documentation.\n    \n*   Built-in seller onboarding and KYC.\n    \n*   Split payments and application fees.\n    \n*   Automated seller payouts.\n    \n*   Strong ecosystem of integrations.\n    \n\nWebsite: [Stripe Connect](https://stripe.com/connect?utm_source=chatgpt.com) \u00a0 \\[1\\]\n\n2\\. Adyen for Platforms\n\nBest for enterprise\n\n*   Excellent international payment infrastructure.\n    \n*   Flexible split payments.\n    \n*   Sophisticated risk management.\n    \n*   Strong global acquiring capabilities.\n    \n*   Better suited to established, high-volume platforms.\n    \n\nWebsite: [Adyen for Platforms](https://www.adyen.com/platforms?utm_source=chatgpt.com) \u00a0 \\[2\\]\n\n3\\. Mangopay\n\nBest for wallets and escrow\n\n*   Designed specifically for marketplaces.\n    \n*   Seller wallets and fund allocation.\n    \n*   Multi-party payment flows.\n    \n*   Particularly interesting for European marketplaces.\n    \n\nWebsite: [Mangopay](https://mangopay.com/?utm_source=chatgpt.com) \u00a0 \\[3\\]\n\n4\\. PayPal Commerce Platform\n\n*   Recognizable checkout experience.\n    \n*   Marketplace payment capabilities.\n    \n*   Global buyer reach.\n    \n*   Useful for marketplaces where PayPal adoption matters.\n    \n\nWebsite: [PayPal Commerce Platform](https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com) \u00a0 \\[4\\]\n\n5\\. Airwallex\n\n*   Multi-currency payment infrastructure.\n    \n*   International seller payouts.\n    \n*   Foreign exchange capabilities.\n    \n*   Interesting for cross-border marketplaces.\n    \n\nWebsite: [Airwallex](https://www.airwallex.com/?utm_source=chatgpt.com) \u00a0 \\[5\\]\n\nThese comparisons reflect current 2026 marketplace offerings.\n\n\\[6, 7, 8, 9\\]\n\nComparison\n----------\n\n| Feature | Stripe Connect | Adyen | Mangopay |\n| --- | --- | --- | --- |\n| Seller onboarding | Yes | Yes | Yes |\n| Split payments | Yes | Yes | Yes |\n| Platform commissions | Yes | Yes | Yes |\n| Seller payouts | Yes | Yes | Yes |\n| Wallet infrastructure | Limited | Balance accounts | Core feature |\n| Startup friendly | Excellent | Moderate | Moderate |\n| Enterprise scalability | Excellent | Excellent | Excellent |\n\nWhat I'd recommend\n------------------\n\nIf I were building a new marketplace today:\n\n*   Startup / MVP: Stripe Connect.\n    \n*   Multi-vendor marketplace: Stripe Connect.\n    \n*   Escrow-heavy marketplace: Mangopay.\n    \n*   Large international marketplace: Adyen.\n    \n*   Cross-border marketplace: Airwallex.\n    \n\nOne important consideration: don't build your own escrow or money-holding infrastructure without understanding the applicable financial regulations. Let an appropriately licensed payments provider handle the regulated money movement.\n\nLet me narrow this down to the best API for your marketplace\n------------------------------------------------------------\n\nThere are four things that would change my recommendation.\n\nWith those answers, I can recommend the actual payment infrastructure, including the API, onboarding model, commission handling, split-payment architecture, and payout system.",
+ "web_search_triggered": false,
+ "additional_prompt": null,
+ "additional_answer_text": null,
+ "map": null,
+ "search_sources": [
+  {
+   "url": "https://stripe.com/connect?utm_source=chatgpt.com",
+   "title": "Stripe Connect",
+   "snippet": null,
+   "rank": 1,
+   "date_published": null
+  },
+  {
+   "url": "https://www.adyen.com/platforms?utm_source=chatgpt.com",
+   "title": "Adyen for Platforms",
+   "snippet": null,
+   "rank": 2,
+   "date_published": null
+  },
+  {
+   "url": "https://mangopay.com/?utm_source=chatgpt.com",
+   "title": "Mangopay",
+   "snippet": null,
+   "rank": 3,
+   "date_published": null
+  },
+  {
+   "url": "https://www.paypal.com/us/business/platforms-and-marketplaces?utm_source=chatgpt.com",
+   "title": "PayPal Commerce Platform",
+   "snippet": null,
+   "rank": 4,
+   "date_published": null
+  },
+  {
+   "url": "https://www.airwallex.com/?utm_source=chatgpt.com",
+   "title": "Airwallex",
+   "snippet": null,
+   "rank": 5,
+   "date_published": null
+  },
+  {
+   "url": "https://dupple.com/learn/best-marketplace-transactability-platforms-2026?utm_source=chatgpt.com",
+   "title": "Best Marketplace Transactability Platforms in 2026",
+   "snippet": null,
+   "rank": 6,
+   "date_published": null
+  },
+  {
+   "url": "https://www.itechguides.com/best/marketplace-payment-platforms/?utm_source=chatgpt.com",
+   "title": "Best Marketplace Payment Platforms in 2026",
+   "snippet": null,
+   "rank": 7,
+   "date_published": null
+  },
+  {
+   "url": "https://www.photonpay.com/hk/blog/article/marketplace-payment-solutions?utm_source=chatgpt.com",
+   "title": "Marketplace Payment Solutions Compared (2026): Providers & Selection",
+   "snippet": null,
+   "rank": 8,
+   "date_published": null
+  },
+  {
+   "url": "https://www.lowcode.agency/blog/payment-gateway-integration-in-marketplace-apps?utm_source=chatgpt.com",
+   "title": "Payment Gateway Integration for Marketplaces",
+   "snippet": null,
+   "rank": 9,
+   "date_published": null
+  }
+ ],
+ "search_sources_more": null,
+ "response_raw": {
+  "_omitted": true,
+  "bytes": 1408360,
+  "sha256": "2f5201f7dcbbd4d76777568b4bf69580ecfefe8668bf948f30804b6e6030384f"
+ },
+ "response_raw_additional_prompt": null,
+ "model": null,
+ "web_search_query": null,
+ "prompt_sent_at": "2026-11-22T00:05:13.352Z",
+ "answer_text_raw": "For most marketplaces, Stripe Connect is the best payments API overall.It is purpose-built for marketplace payment flows, rather than simply processing credit cards. It handles seller onboarding, identity verification, split payments, platform commissions, refunds, and seller payouts.However, the best choice depends on your marketplace's business model, geography, and transaction volume.Top 5 marketplace payment APIs 1. Stripe ConnectBest overallExcellent developer experience and documentation.Built-in seller onboarding and KYC.Split payments and application fees.Automated seller payouts.Strong ecosystem of integrations.Website: Stripe Connect [1] 2. Adyen for PlatformsBest for enterpriseExcellent international payment infrastructure.Flexible split payments.Sophisticated risk management.Strong global acquiring capabilities.Better suited to established, high-volume platforms.Website: Adyen for Platforms [2] 3. MangopayBest for wallets and escrowDesigned specifically for marketplaces.Seller wallets and fund allocation.Multi-party payment flows.Particularly interesting for European marketplaces.Website: Mangopay [3] 4. PayPal Commerce PlatformRecognizable checkout experience.Marketplace payment capabilities.Global buyer reach.Useful for marketplaces where PayPal adoption matters.Website: PayPal Commerce Platform [4] 5. AirwallexMulti-currency payment infrastructure.International seller payouts.Foreign exchange capabilities.Interesting for cross-border marketplaces.Website: Airwallex [5]These comparisons reflect current 2026 marketplace offerings.  [6, 7, 8, 9]ComparisonFeatureStripe ConnectAdyenMangopaySeller onboardingYesYesYesSplit paymentsYesYesYesPlatform commissionsYesYesYesSeller payoutsYesYesYesWallet infrastructureLimitedBalance accountsCore featureStartup friendlyExcellentModerateModerateEnterprise scalabilityExcellentExcellentExcellentWhat I'd recommendIf I were building a new marketplace today:Startup / MVP: Stripe Connect.Multi-vendor marketplace: Stripe Connect.Escrow-heavy marketplace: Mangopay.Large international marketplace: Adyen.Cross-border marketplace: Airwallex.One important consideration: don't build your own escrow or money-holding infrastructure without understanding the applicable financial regulations. Let an appropriately licensed payments provider handle the regulated money movement.Let me narrow this down to the best API for your marketplaceThere are four things that would change my recommendation.1. What kind of marketplace are you building?Multi-vendor marketplaceService marketplace (Uber / Airbnb style)B2B marketplaceDigital products marketplaceFreelancer marketplaceRental marketplaceOther2. Where will you operate?United StatesUnited States + CanadaUnited States + EuropeWorldwide / GlobalEuropeOther3. Expected transaction volume?Pre-launch / MVPUnder $100K per month$100K\u2013$1M per month$1M\u2013$10M per monthOver $10M per month4. How should money flow?Buyer pays platform \u2192 platform takes commission \u2192 seller gets paidBuyer pays multiple sellers in one transactionPlatform holds funds until service/product is deliveredSeller receives payment directly and platform collects a feeNot decided yetFind my best payments API With those answers, I can recommend the actual payment infrastructure, including the API, onboarding model, commission handling, split-payment architecture, and payout system.View sources",
+ "business_locations": null,
+ "ads": null,
+ "additional_answer_text_markdown": "",
+ "questionnaire": [
+  {
+   "question": "1. What kind of marketplace are you building?",
+   "answers": [
+    "Multi-vendor marketplace",
+    "Service marketplace (Uber / Airbnb style)",
+    "B2B marketplace",
+    "Digital products marketplace",
+    "Freelancer marketplace",
+    "Rental marketplace",
+    "Other"
+   ]
+  },
+  {
+   "question": "2. Where will you operate?",
+   "answers": [
+    "United States",
+    "United States + Canada",
+    "United States + Europe",
+    "Worldwide / Global",
+    "Europe",
+    "Other"
+   ]
+  },
+  {
+   "question": "3. Expected transaction volume?",
+   "answers": [
+    "Pre-launch / MVP",
+    "Under $100K per month",
+    "$100K\u2013$1M per month",
+    "$1M\u2013$10M per month",
+    "Over $10M per month"
+   ]
+  },
+  {
+   "question": "4. How should money flow?",
+   "answers": [
+    "Buyer pays platform \u2192 platform takes commission \u2192 seller gets paid",
+    "Buyer pays multiple sellers in one transaction",
+    "Platform holds funds until service/product is delivered",
+    "Seller receives payment directly and platform collects a fee",
+    "Not decided yet"
+   ]
+  }
+ ],
+ "shopping_additional_prompt": null,
+ "citations_additional_prompt": null,
+ "timestamp": "2026-11-22T00:06:08.143Z",
+ "input": {
+  "url": "https://chatgpt.com/",
+  "prompt": "What is the best payments API for a marketplace?",
+  "additional_prompt": "",
+  "geolocation": ""
+ }
+}

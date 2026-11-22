@@ -36,6 +36,25 @@ def floor_window(ts: datetime) -> datetime:
     return datetime.fromtimestamp(epoch - epoch % WINDOW_SECONDS, UTC)
 
 
+OMIT_OVER_BYTES = 100_000
+
+
+def slim_record(record: dict[str, Any], limit: int = OMIT_OVER_BYTES) -> dict[str, Any]:
+    """Replace page dumps (raw HTML, raw response streams) with their size and SHA-256.
+
+    Generic on purpose: no field names, any string field over `limit` bytes. The fields answers
+    are parsed from (answer text, markdown, citations) are a few KB and kept verbatim.
+    """
+    out: dict[str, Any] = {}
+    for key, value in record.items():
+        if isinstance(value, str) and len(value) > limit:
+            data = value.encode()
+            out[key] = {"_omitted": True, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+        else:
+            out[key] = value
+    return out
+
+
 def payload_hash(payload: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(payload, sort_keys=True).encode()).hexdigest()
 
@@ -154,7 +173,7 @@ def load_history(path: Path, batch: int = 2000) -> dict[str, int]:
                 continue
             collected = datetime.fromisoformat(ts.replace("Z", "+00:00"))
             buf.append(RawAnswer(floor_window(collected), ad.platform_id, by_text[asked],
-                                 "synthetic" if rec.get("_synthetic") else "history", collected, rec))
+                                 "synthetic" if rec.get("_synthetic") else "history", collected, slim_record(rec)))
             if len(buf) >= batch:
                 stats["inserted"] += insert_raw(conn, buf)
                 conn.commit()
