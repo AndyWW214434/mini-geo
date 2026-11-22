@@ -146,7 +146,7 @@ def _prompt_breadth(conn, version: str, platform: str, category: str, brand: str
     rows = conn.execute(
         """select a.prompt_id, a.day >= %(cd)s as after,
                   count(*) as n, count(m.brand_id) as k
-           from parsed.answers a
+           from parsed.metric_answers a
            left join parsed.mentions m on m.raw_answer_id = a.raw_answer_id
                 and m.parser_version = a.parser_version and m.brand_id = %(brand)s
            where a.parser_version = %(v)s and a.platform_id = %(p)s and a.category = %(c)s and a.status = 'ok'
@@ -202,7 +202,7 @@ def _drivers(conn, version: str, platform: str, category: str, brand: str, chang
                                     and c.parser_version = a.parser_version and c.domain = %(d)s) as cited,
                             exists (select 1 from parsed.mentions m where m.raw_answer_id = a.raw_answer_id
                                     and m.parser_version = a.parser_version and m.brand_id = %(b)s) as named
-                     from parsed.answers a
+                     from parsed.metric_answers a
                      where a.parser_version = %(v)s and a.platform_id = %(p)s and a.category = %(c)s
                        and a.status = 'ok' and a.day between %(cd)s and %(e)s
                        and not (a.day = any(%(x)s))) t""",

@@ -7,6 +7,7 @@ reviewer can trace each sentence to a query.
 
 from __future__ import annotations
 
+import math
 import uuid
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -93,7 +94,8 @@ def _standing(ctx: Ctx) -> dict[str, Any]:
                 "pos": float(me["pos"]) if me and me["pos"] else None,
                 "leader": ctx.names[leader["brand"]] if leader and leader["brand"] != ctx.focus else None,
                 "leader_vis": leader["vis"] if leader else None,
-                "gap": (me["vis"] - ranked[1]["vis"]) if me and rank == 1 and len(ranked) > 1 else None})
+                "gap": (me["vis"] - ranked[1]["vis"]) if me and rank == 1 and len(ranked) > 1 else None,
+                "runner_up": ctx.names[ranked[1]["brand"]] if me and rank == 1 and len(ranked) > 1 else None})
         table.append(row)
     overall = ctx.conn.execute(
         """select platform_id, sum(mentioning_answers) k, sum(real_answers) n,
@@ -114,7 +116,8 @@ def _standing(ctx: Ctx) -> dict[str, Any]:
 def _volume(ctx: Ctx) -> dict[str, Any]:
     r = ctx.conn.execute("""select sum(total) total, sum(ok) ok, count(distinct platform_id) platforms
                             from mart.daily_platform_health""").fetchone()
-    src = ctx.conn.execute("""select source, count(*) n from raw.answers group by 1 order by 2 desc""").fetchall()
+    # Only the sources the metrics are built from (never a blend of synthetic and real).
+    src = ctx.conn.execute("""select source, count(*) n from parsed.metric_answers group by 1 order by 2 desc""").fetchall()
     prompts = ctx.conn.execute("select count(*) n from config.prompts where active").fetchone()["n"]
     return {"answers": r["total"], "real": r["ok"], "real_rate": r["ok"] / r["total"] if r["total"] else 0,
             "platforms": r["platforms"], "prompts": prompts, "sources": {x["source"]: x["n"] for x in src}}
@@ -136,7 +139,7 @@ def _prompt_moves(ctx: Ctx, platform: str, category: str, brand: str, change_day
     version = ctx.conn.execute("select config.active_parser_version() v").fetchone()["v"]
     rows = ctx.conn.execute(
         """select p.text, a.day >= %(cd)s as after, count(*) n, count(m.brand_id) k
-           from parsed.answers a join config.prompts p using (prompt_id)
+           from parsed.metric_answers a join config.prompts p using (prompt_id)
            left join parsed.mentions m on m.raw_answer_id = a.raw_answer_id
                 and m.parser_version = a.parser_version and m.brand_id = %(b)s
            where a.parser_version = %(v)s and a.platform_id = %(p)s and a.category = %(c)s and a.status = 'ok'
@@ -156,7 +159,7 @@ def _moving_url(ctx: Ctx, platform: str, category: str, domain: str, change_day:
     """The page on `domain` whose citation rate moved most in the driver's direction."""
     r = ctx.conn.execute(
         """with a as (
-             select raw_answer_id, parser_version, day >= %(cd)s as after from parsed.answers
+             select raw_answer_id, parser_version, day >= %(cd)s as after from parsed.metric_answers
              where parser_version = config.active_parser_version() and platform_id = %(p)s
                and category = %(c)s and status = 'ok' and not (day = any(%(x)s))),
            n as (select after, count(*) n from a group by after)
@@ -203,6 +206,15 @@ SITE_PLAYBOOK = {
 DEFAULT_PLAY = "Contact the publisher with current facts about {F} and offer a quote or data for the next update."
 
 
+# What a model can quote when comparing providers, per question category.
+QUOTABLE = {
+    "payments": "pricing, payment methods and countries covered, time to integrate",
+    "billing": "pricing, tax handling, usage-based and invoicing features",
+    "payouts": "payout countries and speed, onboarding and KYC, fees",
+    "fraud": "how scoring works, chargeback handling, pricing",
+}
+
+
 def _play(domain: str, focus_name: str) -> str:
     for sites, text in SITE_PLAYBOOK.values():
         if domain in sites:
@@ -225,6 +237,8 @@ class Story:
     focus_delta: float = 0.0
     prompt_moves: list[dict[str, Any]] = field(default_factory=list)
     prompt_move: dict[str, Any] | None = None
+    focus_visibility: tuple[str, float, float] | None = None   # (category, before, after)
+    focus_position: tuple[str, float, float] | None = None     # (category, before, after)
     why: str = ""
 
 
@@ -272,6 +286,7 @@ def _write_story(ctx: Ctx, s: Story) -> None:
         direction = "gained" if other_f[0]["after"] > other_f[0]["before"] else "lost"
         s.headline = f"{' and '.join(brands)} {direction} {rng} points on {P} in {cat_txt} answers"
 
+    positions: dict[str, tuple[str, float, float]] = {}
     for cat in cats:  # one paragraph per category: every brand that moved, then the focus brand's position
         fs = sorted([f for f in s.findings if f["category"] == cat], key=lambda x: x["brand_id"] != ctx.focus)
         moves = ", ".join(f"{ctx.names[f['brand_id']]} {pct(f['before'])} → {pct(f['after'])}" for f in fs)
@@ -283,6 +298,8 @@ def _write_story(ctx: Ctx, s: Story) -> None:
                          f"{f['position_before']:.1f} to {f['position_after']:.1f}.")
         if not any(f["brand_id"] == ctx.focus for f in fs):
             pb, pa, vb, va = _position(ctx, s.platform_id, cat, ctx.focus, s.change_day)
+            if pb and pa:
+                positions[cat] = (cat, float(pb), float(pa))
             if vb is not None and va is not None:
                 text += f" {F} was named in {pct(vb)} of answers before and {pct(va)} after"
                 if pb and pa and float(pa) - float(pb) >= 0.3:
@@ -292,6 +309,12 @@ def _write_story(ctx: Ctx, s: Story) -> None:
                 else:
                     text += "."
         s.body.append(text)
+
+    lead_cat = (focus_f or sorted(other_f, key=lambda x: -abs(x["after"] - x["before"])))[0]["category"]
+    s.focus_position = positions.get(lead_cat) or next(iter(positions.values()), None)
+    own = next((f for f in s.findings if f["brand_id"] == ctx.focus), None)
+    if own:
+        s.focus_visibility = (own["category"], own["before"], own["after"])
 
     seen = set()
     for f in s.findings:
@@ -322,8 +345,28 @@ def _write_story(ctx: Ctx, s: Story) -> None:
     s.chart = charts.line_chart(series, ctx.names, s.change_day, focus=ctx.focus)
 
 
+def _watch(ctx: Ctx, s: Story, citation: dict[str, Any] | None = None) -> str:
+    """A number the client can track to know the recommendation worked."""
+    F, P = ctx.names[ctx.focus], ctx.platforms[s.platform_id]
+    if citation:
+        target = math.floor((citation["after"] + 0.75 * (citation["before"] - citation["after"])) * 20) / 20
+        return (f"pages on {citation['domain']} cited in at least {pct(target)} of {P} answers in this category "
+                f"(now {pct(citation['after'])}; {pct(citation['before'])} before {day(s.change_day)}).")
+    if s.focus_visibility:
+        cat, before, after = s.focus_visibility
+        target = math.floor((after + 0.75 * (before - after)) * 20) / 20
+        return (f"{F} named in at least {pct(target)} of {P} {cat} answers "
+                f"(now {pct(after)}; {pct(before)} before {day(s.change_day)}).")
+    if s.focus_position:
+        cat, before, after = s.focus_position
+        return (f"{F}'s average position in {P} {cat} answers back to {before + 0.25 * (after - before):.1f} "
+                f"or better (now {after:.1f}; {before:.1f} before {day(s.change_day)}).")
+    return f"{F}'s visibility on {P} in the weekly table above."
+
+
 def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]]) -> list[dict[str, str]]:
-    """Ranked by how many of the focus brand's answers are at stake, then confidence."""
+    """Ranked by how many of the focus brand's answers are at stake, then confidence. Only actions the
+    client can take: collection problems are ours and appear under data quality, not here."""
     F = ctx.names[ctx.focus]
     recs: list[tuple[float, dict[str, str]]] = []
     for s in stories:
@@ -344,6 +387,7 @@ def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]
                        f"same period {F}'s {lead['category']} visibility on {P} fell {pts(s.focus_delta)}.",
                 "do": "Check the page is crawlable by the assistant's search crawler, that its content "
                       "is current, and that it answers the questions buyers ask in its first screen.",
+                "watch": _watch(ctx, s, d),
                 "owner": "Developer relations / docs"}))
         for d in rival_up[:1]:
             q = f" The biggest single drop is on “{worst['prompt']}” ({pct(worst['before'])} to " \
@@ -353,7 +397,9 @@ def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]
                 "why": f"{d['domain']} went from {pct(d['before'])} to {pct(d['after'])} of {P} "
                        f"{lead['category']} answers, led by {d['url'] or 'its pages'}.{q}",
                 "do": f"Write a page that answers that question directly and fairly compares {F} with "
-                      f"{ctx.names[d['owner']]}, with specifics a model can quote (pricing, tax coverage, setup).",
+                      f"{ctx.names[d['owner']]}, with specifics a model can quote "
+                      f"({QUOTABLE.get(lead['category'], 'pricing, coverage, setup')}).",
+                "watch": _watch(ctx, s),
                 "owner": "Product marketing"}))
         for d in third_up[:1]:
             rival = next((f for f in s.findings if f["brand_id"] != ctx.focus and f["after"] > f["before"]), None)
@@ -364,17 +410,8 @@ def _recommendations(ctx: Ctx, stories: list[Story], issues: list[dict[str, Any]
                 "why": f"{P} now cites {d['domain']} in {pct(d['after'])} of {lead['category']} answers, up from "
                        f"{pct(d['before'])}, and this is the page that rose most.{gain}",
                 "do": _play(d["domain"], F),
+                "watch": _watch(ctx, s),
                 "owner": "Marketing / community"}))
-    for i in issues:
-        ev = i["evidence"]
-        if date.fromisoformat(str(ev["end"])) >= ctx.data_end - timedelta(days=2):
-            recs.append((0.05, {
-                "title": f"Fix {ctx.platforms[i['platform_id']]} collection before reading its numbers",
-                "why": f"Only {pct(ev['ok_rate'])} of its answers since {day(date.fromisoformat(str(ev['start'])))} "
-                       f"were complete answers (normally {pct(ev['baseline_ok_rate'])}); most failures are "
-                       f"{ev['dominant_failure'].replace('_', ' ')}.",
-                "do": "Re-run those windows once the scraper is fixed; the pipeline will recompute the days.",
-                "owner": "Data team"}))
     recs.sort(key=lambda x: -x[0])
     return [r for _, r in recs[:5]]
 

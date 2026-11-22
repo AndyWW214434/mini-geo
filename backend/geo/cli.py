@@ -22,6 +22,8 @@ def main() -> None:
     r = sub.add_parser("report", help="build the report for a brand and store it")
     r.add_argument("--brand", default=None)
     r.add_argument("--out", type=Path, default=None)
+    src = sub.add_parser("sources", help="choose which answer sources the metrics are built from")
+    src.add_argument("sources", nargs="+", choices=["synthetic", "history", "brightdata"])
     s = sub.add_parser("schedule", help="create or update the Temporal collection schedule")
     s.add_argument("--pause", action="store_true")
     args = ap.parse_args()
@@ -50,6 +52,12 @@ def main() -> None:
         if args.out:
             args.out.write_text(html)
         print("report", report_id)
+    elif args.cmd == "sources":
+        from geo.db import connection
+        from geo.etl.pipeline import refresh_metrics
+        with connection() as conn:
+            n = conn.execute("select ops.set_metrics_sources(%s) n", (args.sources,)).fetchone()["n"]
+        print(f"metrics now built from {args.sources}; {n} days queued", refresh_metrics().get("days"), "refreshed")
     elif args.cmd == "schedule":
         import asyncio
 

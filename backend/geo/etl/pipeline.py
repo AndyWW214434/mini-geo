@@ -177,7 +177,7 @@ def parse_pending(version: str = PARSER_VERSION, batch: int = 1000, max_batches:
         while max_batches is None or batches < max_batches:
             with connection() as conn:
                 rows = conn.execute(
-                    """select r.raw_answer_id, r.window_start, r.platform_id, r.prompt_id, r.payload
+                    """select r.raw_answer_id, r.window_start, r.platform_id, r.prompt_id, r.source, r.payload
                        from raw.answers r
                        where not exists (select 1 from parsed.answers p
                                          where p.raw_answer_id = r.raw_answer_id and p.parser_version = %s)
@@ -196,7 +196,7 @@ def parse_pending(version: str = PARSER_VERSION, batch: int = 1000, max_batches:
 def _write_parsed(conn: psycopg.Connection, parser: Parser, prompts: dict[str, Prompt],
                   rows: list[dict[str, Any]]) -> None:
     a_cols: dict[str, list[Any]] = {k: [] for k in
-                                    ("id", "platform", "prompt", "cat", "window", "day", "status", "detail", "chars")}
+                                    ("id", "platform", "prompt", "cat", "window", "day", "status", "detail", "chars", "source")}
     m_cols: dict[str, list[Any]] = {k: [] for k in ("id", "brand", "pos", "alias", "offset")}
     c_cols: dict[str, list[Any]] = {k: [] for k in ("id", "ord", "url", "host", "domain")}
     for r in rows:
@@ -204,7 +204,7 @@ def _write_parsed(conn: psycopg.Connection, parser: Parser, prompts: dict[str, P
         rid = r["raw_answer_id"]
         for k, v in zip(a_cols, (rid, r["platform_id"], r["prompt_id"], prompts[r["prompt_id"]].category,
                                  r["window_start"], r["window_start"].astimezone(UTC).date(), out.status,
-                                 out.status_detail, out.answer_chars), strict=True):
+                                 out.status_detail, out.answer_chars, r["source"]), strict=True):
             a_cols[k].append(v)
         for m in out.mentions:
             for k, v in zip(m_cols, (rid, m.brand_id, m.position, m.matched_alias, m.char_offset), strict=True):
@@ -215,11 +215,11 @@ def _write_parsed(conn: psycopg.Connection, parser: Parser, prompts: dict[str, P
     v = parser.version
     conn.execute(
         """insert into parsed.answers (raw_answer_id, parser_version, platform_id, prompt_id, category,
-                                       window_start, day, status, status_detail, answer_chars)
-           select id, %s, platform, prompt, cat, win, day, status, detail, chars
+                                       window_start, day, status, status_detail, answer_chars, source)
+           select id, %s, platform, prompt, cat, win, day, status, detail, chars, source
            from unnest(%s::bigint[], %s::text[], %s::text[], %s::text[], %s::timestamptz[], %s::date[],
-                       %s::text[], %s::text[], %s::int[])
-                as t(id, platform, prompt, cat, win, day, status, detail, chars)
+                       %s::text[], %s::text[], %s::int[], %s::text[])
+                as t(id, platform, prompt, cat, win, day, status, detail, chars, source)
            on conflict do nothing""", (v, *a_cols.values()))
     conn.execute(
         """insert into parsed.mentions (raw_answer_id, parser_version, brand_id, position, matched_alias,

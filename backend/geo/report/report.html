@@ -32,6 +32,7 @@
   .why { color: var(--muted); font-size: 13px; }
   ol.recs { padding-left: 20px; } ol.recs li { margin-bottom: 14px; }
   ol.recs .owner { color: var(--muted); font-size: 12.5px; }
+  ol.recs .watch { display: block; margin-top: 4px; font-size: 13.5px; }
   .small { font-size: 13px; color: var(--muted); }
   code { font-size: 12.5px; background: var(--soft); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
   @media print { main { padding: 0; } h2 { break-after: avoid; } .story { break-inside: avoid; } }
@@ -65,7 +66,7 @@
         {% for c in row.cells %}
           <td class="cell" style="background: {{ heat(c.vis) }}">
             <strong>{{ c.vis|pct }}</strong> · #{{ c.rank or "–" }}
-            {% if c.leader %}<small>{{ c.leader }} {{ c.leader_vis|pct }}</small>{% elif c.gap is not none %}<small>+{{ (c.gap * 100)|round|int }} vs #2</small>{% endif %}
+            {% if c.leader %}<small>{{ c.leader }} {{ c.leader_vis|pct }}</small>{% elif c.gap is not none %}<small>+{{ (c.gap * 100)|round|int }} vs {{ c.runner_up }}</small>{% endif %}
           </td>
         {% endfor %}
         <td class="num">{{ row.overall|pct }}</td>
@@ -120,7 +121,8 @@
   {% if recommendations %}
   <ol class="recs">
     {% for r in recommendations %}
-      <li><strong>{{ r.title }}.</strong> {{ r.why }} {{ r.do }} <span class="owner">Owner: {{ r.owner }}.</span></li>
+      <li><strong>{{ r.title }}.</strong> {{ r.why }} {{ r.do }}
+        <span class="watch">Success: {{ r.watch }}</span> <span class="owner">Owner: {{ r.owner }}.</span></li>
     {% endfor %}
   </ol>
   {% else %}<p>Nothing needs action this period.</p>{% endif %}
@@ -139,7 +141,8 @@
     {% endfor %}
     </tbody>
   </table>
-  <p>These days are excluded from change detection on that assistant. A naive count would have shown visibility collapsing on each of them.</p>
+  <p>These days are excluded from change detection on that assistant. A naive count would have shown visibility collapsing on each of them.
+     A problem that runs to the end of the period is still open: treat that assistant's latest numbers with caution until collection recovers.</p>
   {% endif %}
   {% if watch %}
     <p>Also seen, but not strong enough to act on:
